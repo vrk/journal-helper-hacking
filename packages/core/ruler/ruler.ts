@@ -316,7 +316,7 @@ class CanvasRuler {
       });
     }
 
-    // 标尺刻度线显示
+    // Label scales display
     for (let j = 0; j + startOffset <= Math.ceil(unitLength); j += gap) {
       const position = Math.round((startOffset + j) * zoom);
       const left = isHorizontal ? position : this.options.ruleSize - 8;
@@ -332,16 +332,16 @@ class CanvasRuler {
       });
     }
 
-    // 标尺蓝色遮罩
+    // Label ruler blue mask
     if (this.objectRect) {
       const axis = isHorizontal ? 'x' : 'y';
       this.objectRect[axis].forEach((rect) => {
-        // 跳过指定矩形
+        // Skip the specified rectangle
         if (rect.skip === axis) {
           return;
         }
 
-        // 获取数字的值
+        // Get the value of the number
         const roundFactor = (x: number) => Math.round(x / zoom + startCalibration) + '';
         const leftTextVal = roundFactor(isHorizontal ? rect.left : rect.top);
         const rightTextVal = roundFactor(
