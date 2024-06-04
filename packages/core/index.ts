@@ -1,10 +1,9 @@
 /*
- * @Author: 秦少卫
+ * @Author: Qin Shaowei
  * @Date: 2023-02-03 23:29:34
- * @LastEditors: 秦少卫
- * @LastEditTime: 2024-05-27 16:09:57
- * @Description: 核心入口文件
- */
+ * @Lasteditors: Qin Shaowei
+ * @Lastedittime: 2024-05-27 16:09:57
+ * @Descripting: Core entrance file */
 import Editor from './Editor';
 export { default as DringPlugin } from './plugin/DringPlugin';
 export { default as AlignGuidLinePlugin } from './plugin/AlignGuidLinePlugin';

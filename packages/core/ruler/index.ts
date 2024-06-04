@@ -8,18 +8,18 @@ function initRuler(canvas: Canvas, options?: RulerOptions) {
     ...options,
   });
 
-  // 辅助线移动到画板外删除
+  // Auxiliary line moves to the painting board to delete
   let workspace: fabric.Object | undefined = undefined;
 
   /**
-   * 获取workspace
+   * Get workspace
    */
   const getWorkspace = () => {
     workspace = canvas.getObjects().find((item) => item.id === 'workspace');
   };
 
   /**
-   * 判断target是否在object矩形外
+   * Determine whether target is outside Object rectangle
    * @param object
    * @param target
    * @returns

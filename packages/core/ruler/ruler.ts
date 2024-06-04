@@ -114,7 +114,7 @@ class CanvasRuler {
   private tempGuidelLine: fabric.GuideLine | undefined;
 
   constructor(_options: RulerOptions) {
-    // 合并默认配置
+    // Merge default configuration
     this.options = Object.assign(
       {
         ruleSize: 20,
@@ -141,20 +141,20 @@ class CanvasRuler {
     }
   }
 
-  // 销毁
+  // destroy
   public destroy() {
     this.disable();
   }
 
   /**
-   * 移除全部辅助线
+   * Remove all the auxiliary lines
    */
   public clearGuideline() {
     this.options.canvas.remove(...this.options.canvas.getObjects(fabric.GuideLine.prototype.type));
   }
 
   /**
-   * 显示全部辅助线
+   * Show all the auxiliary lines
    */
   public showGuideline() {
     this.options.canvas.getObjects(fabric.GuideLine.prototype.type).forEach((guideLine) => {
@@ -164,7 +164,7 @@ class CanvasRuler {
   }
 
   /**
-   * 隐藏全部辅助线
+   * Hide all the auxiliary lines
    */
   public hideGuideline() {
     this.options.canvas.getObjects(fabric.GuideLine.prototype.type).forEach((guideLine) => {
@@ -174,12 +174,12 @@ class CanvasRuler {
   }
 
   /**
-   * 启用
+   * Open up
    */
   public enable() {
     this.options.enabled = true;
 
-    // 绑定事件
+    // Binding event
     this.options.canvas.on('after:render', this.eventHandler.calcObjectRect);
     this.options.canvas.on('after:render', this.eventHandler.render);
     this.options.canvas.on('mouse:down', this.eventHandler.canvasMouseDown);

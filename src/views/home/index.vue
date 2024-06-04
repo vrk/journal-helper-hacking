@@ -36,11 +36,9 @@
         <history></history>
 
         <div style="float: right">
-          <!-- 预览 -->
+          <!-- Preview -->
           <previewCurrent />
-          <waterMark />
           <save></save>
-          <login></login>
           <lang></lang>
         </div>
       </Header>
@@ -253,7 +251,7 @@ import Edit from '@/components/edit.vue';
 import ClipImage from '@/components/clipImage.vue';
 import AttributeTextContent from '@/components/attributeTextContent.vue';
 
-// 创建编辑器
+// Create an editor
 const canvasEditor = new Editor();
 
 const state = reactive({
@@ -265,23 +263,15 @@ const state = reactive({
   ruler: true,
 });
 
-// 左侧菜单渲染
-const menuActive = ref('importTmpl');
+// Left menu rendering
+const menuActive = ref('tools');
 const leftBarComponent = {
-  importTmpl,
   tools,
+  importTmpl,
   importSvgEl,
-  fontStyle,
   layer,
-  myMaterial,
 };
 const leftBar = ref([
-  {
-    //模板
-    key: 'importTmpl',
-    name: t('templates'),
-    icon: 'md-book',
-  },
   {
     //基础元素
     key: 'tools',
@@ -289,10 +279,10 @@ const leftBar = ref([
     icon: 'md-images',
   },
   {
-    //字体样式
-    key: 'fontStyle',
-    name: t('font_style'),
-    icon: 'ios-pulse',
+    //模板
+    key: 'importTmpl',
+    name: t('templates'),
+    icon: 'md-book',
   },
   {
     // 图片元素
@@ -305,12 +295,6 @@ const leftBar = ref([
     key: 'layer',
     name: t('layers'),
     icon: 'md-reorder',
-  },
-  {
-    // 用户素材
-    key: 'myMaterial',
-    name: t('mymaterial'),
-    icon: 'ios-contact-outline',
   },
 ]);
 
@@ -361,12 +345,6 @@ onMounted(() => {
   // 默认打开标尺
   if (state.ruler) {
     canvasEditor.rulerEnable();
-  }
-
-  // 有ID时，打开作品面板
-  const route = useRoute();
-  if (route?.query?.id) {
-    menuActive.value = 'myMaterial';
   }
 });
 

@@ -27,24 +27,24 @@ const getGap = (zoom: number) => {
 const mergeLines = (rect: Rect[], isHorizontal: boolean) => {
   const axis = isHorizontal ? 'left' : 'top';
   const length = isHorizontal ? 'width' : 'height';
-  // 先按照 axis 的大小排序
+  // Sort by the size of AXIS
   rect.sort((a, b) => a[axis] - b[axis]);
   const mergedLines = [];
   let currentLine = Object.assign({}, rect[0]);
   for (const item of rect) {
     const line = Object.assign({}, item);
     if (currentLine[axis] + currentLine[length] >= line[axis]) {
-      // 当前线段和下一个线段相交，合并宽度
+      // The current line segment intersects with the next segment, and the merger width
       currentLine[length] =
         Math.max(currentLine[axis] + currentLine[length], line[axis] + line[length]) -
         currentLine[axis];
     } else {
-      // 当前线段和下一个线段不相交，将当前线段加入结果数组中，并更新当前线段为下一个线段
+      // The current line segment does not intersect the next line segment, add the current line segment to the result array, and update the current line segment to the next line segment
       mergedLines.push(currentLine);
       currentLine = Object.assign({}, line);
     }
   }
-  // 加入数组
+  // Join the array
   mergedLines.push(currentLine);
   return mergedLines;
 };

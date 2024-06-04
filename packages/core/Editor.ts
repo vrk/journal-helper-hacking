@@ -11,11 +11,11 @@ class Editor extends EventEmitter {
   private pluginMap: {
     [propName: string]: IPluginTempl;
   } = {};
-  // 自定义事件
+  // Custom event
   private customEvents: string[] = [];
-  // 自定义API
+  // Custom API
   private customApis: string[] = [];
-  // 生命周期函数名
+  // Life cycle function name
   private hooks: IEditorHooksType[] = [
     'hookImportBefore',
     'hookImportAfter',
@@ -38,12 +38,12 @@ class Editor extends EventEmitter {
     return this.canvas;
   }
 
-  // 引入组件
+  // Introduce component
   use(plugin: IPluginClass, options?: IPluginOption) {
     if (this._checkPlugin(plugin) && this.canvas) {
       this._saveCustomAttr(plugin);
       const pluginRunTime = new plugin(this.canvas, this, options || {}) as IPluginClass;
-      // 添加插件名称
+      // Add plug -in name
       pluginRunTime.pluginName = plugin.pluginName;
       this.pluginMap[plugin.pluginName] = pluginRunTime;
       this._bindingHooks(pluginRunTime);
@@ -60,29 +60,29 @@ class Editor extends EventEmitter {
     this.customApis = [];
     this.hooksEntity = {};
   }
-  // 获取插件
+  // Obtain a plug -in
   getPlugin(name: string) {
     if (this.pluginMap[name]) {
       return this.pluginMap[name];
     }
   }
 
-  // 检查组件
+  // Inspection component
   private _checkPlugin(plugin: IPluginClass) {
     const { pluginName, events = [], apis = [] } = plugin;
-    //名称检查
+    //Name inspection
     if (this.pluginMap[pluginName]) {
-      throw new Error(pluginName + '插件重复初始化');
+      throw new Error(pluginName + 'Plug -in repeated initialization');
     }
     events.forEach((eventName: string) => {
       if (this.customEvents.find((info) => info === eventName)) {
-        throw new Error(pluginName + '插件中' + eventName + '重复');
+        throw new Error(pluginName + 'Plug -in' + eventName + 'repeat');
       }
     });
 
     apis.forEach((apiName: string) => {
       if (this.customApis.find((info) => info === apiName)) {
-        throw new Error(pluginName + '插件中' + apiName + '重复');
+        throw new Error(pluginName + 'Plug -in' + apiName + 'repeat');
       }
     });
     return true;
@@ -173,7 +173,7 @@ class Editor extends EventEmitter {
     this.use(ServersPlugin);
   }
 
-  // 解决 listener 为 undefined 的时候卸载错误
+  // Uninstall the error when solving the Listener to UNDEFINED
   off(eventName: string, listener: any): this {
     // noinspection TypeScriptValidateTypes
     return listener ? super.off(eventName, listener) : this;

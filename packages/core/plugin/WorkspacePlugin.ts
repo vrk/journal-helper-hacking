@@ -11,44 +11,47 @@ import Editor from '../Editor';
 import { throttle } from 'lodash-es';
 type IEditor = Editor;
 
+type MyOptionType = {
+  width: number;
+  height: number;
+};
+
 class WorkspacePlugin {
-  public canvas: fabric.Canvas;
+  public fabricCanvas: fabric.Canvas;
   public editor: IEditor;
   static pluginName = 'WorkspacePlugin';
   static events = ['sizeChange'];
   static apis = ['big', 'small', 'auto', 'one', 'setSize', 'getWorkspase', 'setWorkspaseBg'];
+  static cssPixelsPerInch = 96;
+  static dpi = 300;
   workspaceEl!: HTMLElement;
-  workspace: null | fabric.Rect;
-  option: any;
+  workspaceFabricRect: null | fabric.Rect;
+  option: MyOptionType;
   zoomRatio: number;
-  constructor(canvas: fabric.Canvas, editor: IEditor) {
-    this.canvas = canvas;
+  constructor(fabricCanvas: fabric.Canvas, editor: IEditor) {
+    this.fabricCanvas = fabricCanvas;
     this.editor = editor;
-    this.workspace = null;
-    this.init({
-      width: 900,
-      height: 2000,
-    });
-    this.zoomRatio = 0.85;
-  }
-
-  init(option: { width: number; height: number }) {
+    this.workspaceFabricRect = null;
     const workspaceEl = document.querySelector('#workspace') as HTMLElement;
     if (!workspaceEl) {
       throw new Error('element #workspace is missing, plz check!');
     }
     this.workspaceEl = workspaceEl;
-    this.workspace = null;
-    this.option = option;
+    this.workspaceFabricRect = null;
+    this.option = {
+      width: 900,
+      height: 2000,
+    };
     this._initBackground();
     this._initWorkspace();
     this._initResizeObserve();
     this._bindWheel();
+    this.zoomRatio = 1;
   }
 
   hookImportAfter() {
     return new Promise((resolve) => {
-      const workspace = this.canvas.getObjects().find((item) => item.id === 'workspace');
+      const workspace = this.fabricCanvas.getObjects().find((item) => item.id === 'workspace');
       if (workspace) {
         workspace.set('selectable', false);
         workspace.set('hasControls', false);
@@ -66,14 +69,14 @@ class WorkspacePlugin {
     });
   }
 
-  // 初始化背景
+  // Initialization background
   _initBackground() {
-    this.canvas.backgroundImage = '';
-    this.canvas.setWidth(this.workspaceEl.offsetWidth);
-    this.canvas.setHeight(this.workspaceEl.offsetHeight);
+    this.fabricCanvas.backgroundImage = '';
+    this.fabricCanvas.setWidth(this.workspaceEl.offsetWidth);
+    this.fabricCanvas.setHeight(this.workspaceEl.offsetHeight);
   }
 
-  // 初始化画布
+  // Initialized canvas
   _initWorkspace() {
     const { width, height } = this.option;
     const workspace = new fabric.Rect({
@@ -86,27 +89,27 @@ class WorkspacePlugin {
     workspace.set('selectable', false);
     workspace.set('hasControls', false);
     workspace.hoverCursor = 'default';
-    this.canvas.add(workspace);
-    this.canvas.renderAll();
+    this.fabricCanvas.add(workspace);
+    this.fabricCanvas.renderAll();
 
-    this.workspace = workspace;
-    if (this.canvas.clearHistory) {
-      this.canvas.clearHistory();
+    this.workspaceFabricRect = workspace;
+    if (this.fabricCanvas.clearHistory) {
+      this.fabricCanvas.clearHistory();
     }
     this.auto();
   }
 
   // 返回workspace对象
   getWorkspase() {
-    return this.canvas.getObjects().find((item) => item.id === 'workspace') as fabric.Rect;
+    return this.fabricCanvas.getObjects().find((item) => item.id === 'workspace') as fabric.Rect;
   }
 
   /**
-   * 设置画布中心到指定对象中心点上
-   * @param {Object} obj 指定的对象
+   * Set the canvas center to the specified object center point
+   * @param {Object} obj Specified object
    */
   setCenterFromObject(obj: fabric.Rect) {
-    const { canvas } = this;
+    const { fabricCanvas: canvas } = this;
     const objCenter = obj.getCenterPoint();
     const viewportTransform = canvas.viewportTransform;
     if (canvas.width === undefined || canvas.height === undefined || !viewportTransform) return;
@@ -127,16 +130,19 @@ class WorkspacePlugin {
   }
 
   setSize(width: number | undefined, height: number | undefined) {
+    if (width === undefined || height === undefined) {
+      throw new Error(`width or height is undefined. width: ${width}, height: ${height}`);
+    }
     this._initBackground();
     this.option.width = width;
     this.option.height = height;
     // 重新设置workspace
-    this.workspace = this.canvas
+    this.workspaceFabricRect = this.fabricCanvas
       .getObjects()
       .find((item) => item.id === 'workspace') as fabric.Rect;
-    this.workspace.set('width', width);
-    this.workspace.set('height', height);
-    this.editor.emit('sizeChange', this.workspace.width, this.workspace.height);
+    this.workspaceFabricRect.set('width', width);
+    this.workspaceFabricRect.set('height', height);
+    this.editor.emit('sizeChange', this.workspaceFabricRect.width, this.workspaceFabricRect.height);
     this.auto();
   }
 
@@ -144,20 +150,20 @@ class WorkspacePlugin {
     const { workspaceEl } = this;
     const width = workspaceEl.offsetWidth;
     const height = workspaceEl.offsetHeight;
-    this.canvas.setWidth(width);
-    this.canvas.setHeight(height);
-    const center = this.canvas.getCenter();
-    this.canvas.setViewportTransform(fabric.iMatrix.concat());
-    this.canvas.zoomToPoint(new fabric.Point(center.left, center.top), scale);
-    if (!this.workspace) return;
-    this.setCenterFromObject(this.workspace);
+    this.fabricCanvas.setWidth(width);
+    this.fabricCanvas.setHeight(height);
+    const center = this.fabricCanvas.getCenter();
+    this.fabricCanvas.setViewportTransform(fabric.iMatrix.concat());
+    this.fabricCanvas.zoomToPoint(new fabric.Point(center.left, center.top), scale);
+    if (!this.workspaceFabricRect) return;
+    this.setCenterFromObject(this.workspaceFabricRect);
 
     // 超出画布不展示
-    this.workspace.clone((cloned: fabric.Rect) => {
-      this.canvas.clipPath = cloned;
-      this.canvas.requestRenderAll();
+    this.workspaceFabricRect.clone((cloned: fabric.Rect) => {
+      this.fabricCanvas.clipPath = cloned;
+      this.fabricCanvas.requestRenderAll();
     });
-    if (cb) cb(this.workspace.left, this.workspace.top);
+    if (cb) cb(this.workspaceFabricRect.left, this.workspaceFabricRect.top);
   }
 
   _getScale() {
@@ -169,18 +175,18 @@ class WorkspacePlugin {
 
   // 放大
   big() {
-    let zoomRatio = this.canvas.getZoom();
+    let zoomRatio = this.fabricCanvas.getZoom();
     zoomRatio += 0.05;
-    const center = this.canvas.getCenter();
-    this.canvas.zoomToPoint(new fabric.Point(center.left, center.top), zoomRatio);
+    const center = this.fabricCanvas.getCenter();
+    this.fabricCanvas.zoomToPoint(new fabric.Point(center.left, center.top), zoomRatio);
   }
 
   // 缩小
   small() {
-    let zoomRatio = this.canvas.getZoom();
+    let zoomRatio = this.fabricCanvas.getZoom();
     zoomRatio -= 0.05;
-    const center = this.canvas.getCenter();
-    this.canvas.zoomToPoint(
+    const center = this.fabricCanvas.getCenter();
+    this.fabricCanvas.zoomToPoint(
       new fabric.Point(center.left, center.top),
       zoomRatio < 0 ? 0.01 : zoomRatio
     );
@@ -195,7 +201,7 @@ class WorkspacePlugin {
   // 1:1 放大
   one() {
     this.setZoomAuto(1 * this.zoomRatio);
-    this.canvas.requestRenderAll();
+    this.fabricCanvas.requestRenderAll();
   }
 
   setWorkspaseBg(color: string) {
@@ -204,7 +210,7 @@ class WorkspacePlugin {
   }
 
   _bindWheel() {
-    this.canvas.on('mouse:wheel', function (this: fabric.Canvas, opt) {
+    this.fabricCanvas.on('mouse:wheel', function (this: fabric.Canvas, opt) {
       const delta = opt.e.deltaY;
       let zoom = this.getZoom();
       zoom *= 0.999 ** delta;
@@ -220,6 +226,36 @@ class WorkspacePlugin {
   destroy() {
     console.log('pluginDestroy');
   }
+
+  // _setDPI(canvas, dpi: number) {
+  //   // Set up CSS size.
+  //   canvas.style.width = `${CANVAS_WIDTH_INCHES}in`;
+  //   canvas.style.height = `${CANVAS_HEIGHT_INCHES}in`;
+
+  //   // Get size information.
+  //   const scaleFactor = dpi / CSS_PIXELS_PER_INCH;
+  //   const width = CANVAS_WIDTH_INCHES * CSS_PIXELS_PER_INCH;
+  //   const height = CANVAS_HEIGHT_INCHES * CSS_PIXELS_PER_INCH;
+
+  //   // Resize the canvas.
+  //   canvas.width = Math.ceil(width * scaleFactor);
+  //   canvas.height = Math.ceil(height * scaleFactor);
+  // }
+
+  // _setDPI(canvas, dpi: number) {
+  //   // Set up CSS size.
+  //   canvas.style.width = `${CANVAS_WIDTH_INCHES}in`;
+  //   canvas.style.height = `${CANVAS_HEIGHT_INCHES}in`;
+
+  //   // Get size information.
+  //   const scaleFactor = dpi / CSS_PIXELS_PER_INCH;
+  //   const width = CANVAS_WIDTH_INCHES * CSS_PIXELS_PER_INCH;
+  //   const height = CANVAS_HEIGHT_INCHES * CSS_PIXELS_PER_INCH;
+
+  //   // Resize the canvas.
+  //   canvas.width = Math.ceil(width * scaleFactor);
+  //   canvas.height = Math.ceil(height * scaleFactor);
+  // }
 }
 
 export default WorkspacePlugin;

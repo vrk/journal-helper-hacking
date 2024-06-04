@@ -38,6 +38,7 @@ import modalSzie from '@/components/common/modalSzie';
 
 const { mixinState, canvasEditor } = useSelect();
 
+// !!!! PROBABLY CHANGE
 const DefaultSize = {
   width: 900,
   height: 1200,
