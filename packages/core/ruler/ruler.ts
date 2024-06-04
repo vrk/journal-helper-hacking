@@ -11,6 +11,7 @@ import {
 } from './utils';
 import { throttle } from 'lodash-es';
 import { setupGuideLine } from './guideline';
+import { start } from 'repl';
 
 /**
  * 配置
@@ -131,8 +132,6 @@ class CanvasRuler {
         borderColor: '#ddd',
         highlightColor: '#007fff',
         textColor: '#888',
-        units: 'pixels',
-        dpi: 72,
       },
       _options
     );
@@ -276,6 +275,7 @@ class CanvasRuler {
 
   private draw(opt: { isHorizontal: boolean; rulerLength: number; startCalibration: number }) {
     const { isHorizontal, rulerLength, startCalibration } = opt;
+    console.log('hi', rulerLength, startCalibration);
     const zoom = this.getZoom();
 
     const gap = getGapForPixels(zoom);
@@ -308,7 +308,7 @@ class CanvasRuler {
         ? this.options.ruleSize / 2 - this.options.fontSize / 2 - 4
         : position + textLength;
       drawText(this.ctx, {
-        text: 'meow',
+        text: textValue,
         left: textX,
         top: textY,
         fill: textColor.toRgb(),

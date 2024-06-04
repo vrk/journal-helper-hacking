@@ -310,6 +310,8 @@ onMounted(() => {
     controlsAboveOverlay: true, // 超出clipPath后仍然展示控制条
     imageSmoothingEnabled: false, // 解决文字导出后不清晰问题
     preserveObjectStacking: true, // 当选择画布中的对象时，让对象不在顶层。
+    units: 'inches',
+    dpi: 300,
   });
 
   // 初始化编辑器
@@ -331,10 +333,7 @@ onMounted(() => {
   canvasEditor.use(WorkspacePlugin);
   canvasEditor.use(HistoryPlugin);
   canvasEditor.use(FlipPlugin);
-  canvasEditor.use(RulerPlugin, {
-    units: state.units,
-    dpi: state.dpi,
-  });
+  canvasEditor.use(RulerPlugin);
   canvasEditor.use(DrawPolygonPlugin);
   canvasEditor.use(FreeDrawPlugin);
   canvasEditor.use(PathTextPlugin);
@@ -368,12 +367,12 @@ const rulerSwitch = (val) => {
 const hideToolsBar = () => {
   state.toolsBarShow = !state.toolsBarShow;
 };
-// 展示工具条
+// Display toolbar
 const showToolsBar = (val) => {
   menuActive.value = val;
   state.toolsBarShow = true;
 };
-// 属性面板开关
+// Attribute panel switch
 const switchAttrBar = () => {
   state.attrBarShow = !state.attrBarShow;
 };
@@ -396,7 +395,7 @@ provide('mixinState', mixinState);
     vertical-align: super;
   }
 }
-// 左侧容器
+// Left container
 .left-bar {
   width: 65px;
   height: 100%;

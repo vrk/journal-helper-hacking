@@ -1,4 +1,5 @@
 declare namespace fabric {
+  export type CanvasUnits = 'pixels' | 'inches';
   export interface Canvas {
     contextTop: CanvasRenderingContext2D;
     lowerCanvasEl: HTMLElement;
@@ -7,6 +8,11 @@ declare namespace fabric {
     historyProcessing: boolean;
     _currentTransform: unknown;
     extraProps: any;
+
+    // My own additions:
+    units: CanvasUnits;
+    dpi: number;
+
     clearHistory(): void;
     _historyNext(): void;
     _historyInit(): void;

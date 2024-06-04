@@ -16,21 +16,13 @@ import initRuler from '../ruler';
 class RulerPlugin {
   public canvas: fabric.Canvas;
   public editor: IEditor;
-  public units: 'pixels' | 'inches';
-  public dpi: number;
   static pluginName = 'RulerPlugin';
   // static events = ['sizeChange'];
   static apis = ['hideGuideline', 'showGuideline', 'rulerEnable', 'rulerDisable'];
   ruler: any;
-  constructor(
-    canvas: fabric.Canvas,
-    editor: IEditor,
-    config: { units: 'pixels' | 'inches'; dpi: number }
-  ) {
+  constructor(canvas: fabric.Canvas, editor: IEditor) {
     this.canvas = canvas;
     this.editor = editor;
-    this.units = config.units;
-    this.dpi = config.dpi;
     this.init();
   }
 
