@@ -269,6 +269,11 @@ class CanvasRuler {
     };
   }
 
+  private getDpi() {
+    // console.log(this.options.canvas.dpi);
+    return this.options.canvas.dpi ?? 72.0;
+  }
+
   private getZoom() {
     return this.options.canvas.getZoom();
   }
@@ -276,8 +281,130 @@ class CanvasRuler {
   private draw(opt: { isHorizontal: boolean; rulerLength: number; startCalibration: number }) {
     const { isHorizontal, rulerLength, startCalibration } = opt;
     console.log('hi', rulerLength, startCalibration);
-    const zoom = this.getZoom();
+    if (this.options.canvas.units === 'pixels') {
+      this.drawForPixels(isHorizontal, rulerLength, startCalibration);
+    } else {
+      this.drawForInches(isHorizontal, rulerLength, startCalibration);
+    }
+  }
 
+  private drawForInches(isHorizontal: boolean, rulerLength: number, startCalibration: number) {
+    const zoom = this.getZoom();
+    const gap = this.options.canvas.dpi;
+    const unitLength = rulerLength / zoom;
+    const startValue = Math[startCalibration > 0 ? 'floor' : 'ceil'](startCalibration / gap) * gap;
+    const startOffset = startValue - startCalibration;
+
+    // Benchmark background
+    const canvasSize = this.getSize();
+    drawRect(this.ctx, {
+      left: 0,
+      top: 0,
+      width: isHorizontal ? canvasSize.width : this.options.ruleSize,
+      height: isHorizontal ? this.options.ruleSize : canvasSize.height,
+      fill: this.options.backgroundColor,
+      stroke: this.options.borderColor,
+    });
+
+    // color
+    const textColor = new fabric.Color(this.options.textColor);
+    // Label ruler text display
+    for (let i = 0; i + startOffset <= Math.ceil(unitLength); i += gap) {
+      const position = (startOffset + i) * zoom;
+      const textValue = (startValue + i) / this.getDpi() + '';
+      const textLength = (10 * textValue.length) / 4;
+      const textX = isHorizontal
+        ? position - textLength - 1
+        : this.options.ruleSize / 2 - this.options.fontSize / 2 - 4;
+      const textY = isHorizontal
+        ? this.options.ruleSize / 2 - this.options.fontSize / 2 - 4
+        : position + textLength;
+      drawText(this.ctx, {
+        text: textValue,
+        left: textX,
+        top: textY,
+        fill: textColor.toRgb(),
+        angle: isHorizontal ? 0 : -90,
+      });
+    }
+
+    // Label scales display
+    for (let j = 0; j + startOffset <= Math.ceil(unitLength); j += gap) {
+      const position = Math.round((startOffset + j) * zoom);
+      const left = isHorizontal ? position : this.options.ruleSize - 8;
+      const top = isHorizontal ? this.options.ruleSize - 8 : position;
+      const width = isHorizontal ? 0 : 8;
+      const height = isHorizontal ? 8 : 0;
+      drawLine(this.ctx, {
+        left,
+        top,
+        width,
+        height,
+        stroke: textColor.toRgb(),
+      });
+    }
+
+    // Label ruler blue mask
+    if (this.objectRect) {
+      const axis = isHorizontal ? 'x' : 'y';
+      this.objectRect[axis].forEach((rect) => {
+        // Skip the specified rectangle
+        if (rect.skip === axis) {
+          return;
+        }
+
+        // Get the value of the number
+        const roundFactor = (x: number) => Math.round(x / zoom + startCalibration) + '';
+        const leftTextVal = roundFactor(isHorizontal ? rect.left : rect.top);
+        const rightTextVal = roundFactor(
+          isHorizontal ? rect.left + rect.width : rect.top + rect.height
+        );
+
+        const isSameText = leftTextVal === rightTextVal;
+
+        // 颜色
+        const highlightColor = new fabric.Color(this.options.highlightColor);
+
+        // Highlighten
+        highlightColor.setAlpha(0.5);
+        drawRect(this.ctx, {
+          left: isHorizontal ? rect.left : this.options.ruleSize - 8,
+          top: isHorizontal ? this.options.ruleSize - 8 : rect.top,
+          width: isHorizontal ? rect.width : 8,
+          height: isHorizontal ? 8 : rect.height,
+          fill: highlightColor.toRgba(),
+        });
+
+        const lineSize = isSameText ? 8 : 14;
+
+        highlightColor.setAlpha(1);
+
+        const lineOpt = {
+          width: isHorizontal ? 0 : lineSize,
+          height: isHorizontal ? lineSize : 0,
+          stroke: highlightColor.toRgba(),
+        };
+
+        drawLine(this.ctx, {
+          ...lineOpt,
+          left: isHorizontal ? rect.left : this.options.ruleSize - lineSize,
+          top: isHorizontal ? this.options.ruleSize - lineSize : rect.top,
+        });
+
+        if (!isSameText) {
+          drawLine(this.ctx, {
+            ...lineOpt,
+            left: isHorizontal ? rect.left + rect.width : this.options.ruleSize - lineSize,
+            top: isHorizontal ? this.options.ruleSize - lineSize : rect.top + rect.height,
+          });
+        }
+      });
+    }
+    // draw end
+  }
+
+  private drawForPixels(isHorizontal: boolean, rulerLength: number, startCalibration: number) {
+    const zoom = this.getZoom();
     const gap = getGapForPixels(zoom);
     const unitLength = rulerLength / zoom;
     const startValue = Math[startCalibration > 0 ? 'floor' : 'ceil'](startCalibration / gap) * gap;
@@ -363,32 +490,6 @@ class CanvasRuler {
           fill: highlightColor.toRgba(),
         });
 
-        // This is ruler stuff upon selection - let's ignore for now
-        // Numbers on both sides
-        // const pad = this.options.ruleSize / 2 - this.options.fontSize / 2 - 4;
-        // const textOpt = {
-        //   fill: highlightColor.toRgba(),
-        //   angle: isHorizontal ? 0 : -90,
-        // };
-
-        // drawText(this.ctx, {
-        //   ...textOpt,
-        //   text: 'lefto',
-        //   left: isHorizontal ? rect.left - 2 : pad,
-        //   top: isHorizontal ? pad : rect.top - 2,
-        //   align: isSameText ? 'center' : isHorizontal ? 'right' : 'left',
-        // });
-
-        // if (!isSameText) {
-        //   drawText(this.ctx, {
-        //     ...textOpt,
-        //     text: 'righto',
-        //     left: isHorizontal ? rect.left + rect.width + 2 : pad,
-        //     top: isHorizontal ? pad : rect.top + rect.height + 2,
-        //     align: isHorizontal ? 'left' : 'right',
-        //   });
-        // }
-
         // Lines around the object highlight
 
         const lineSize = isSameText ? 8 : 14;
@@ -418,7 +519,6 @@ class CanvasRuler {
     }
     // draw end
   }
-
   /**
    * 计算起始点
    */
