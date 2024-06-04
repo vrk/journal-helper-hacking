@@ -9,7 +9,7 @@
 <template>
   <div class="box attr-item-box" v-if="mixinState.mSelectMode === 'one'">
     <!-- <h3>数据</h3> -->
-    <Divider plain orientation="left"><h4>数据</h4></Divider>
+    <Divider plain orientation="left"><h4>data</h4></Divider>
 
     <Form :label-width="40" class="form-wrap">
       <FormItem :label="$t('attributes.id')">

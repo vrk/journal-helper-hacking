@@ -2,44 +2,27 @@
   <div class="box" v-if="mixinState.mSelectMode === 'one' && isImage">
     <!-- <Divider plain orientation="left">图像描边</Divider> -->
     <Divider plain orientation="left">
-      <h4>图像描边</h4>
+      <h4>Image drawing</h4>
     </Divider>
     <div class="hd-wrap">
       <div class="hd">
-        <span>启用图像描边</span>
-        <Poptip trigger="hover" content="只支持png透明图像">
-          <span><Icon type="ios-alert" color="#f34250" /></span>
-        </Poptip>
+        <span>Stroke</span>
       </div>
 
       <iSwitch v-model="openImgStroke" size="large" class="switch" @on-change="onSwitchChange">
         <template #open>
-          <span>开启</span>
+          <span>Open</span>
         </template>
         <template #close>
-          <span>关闭</span>
+          <span>closure</span>
         </template>
       </iSwitch>
     </div>
 
     <template v-if="openImgStroke">
-      <div class="hd-wrap">
-        <div class="hd">
-          <span>是否只显示描边</span>
-        </div>
-
-        <iSwitch v-model="isOnlyStroke" size="large" class="switch" @on-change="updateStroke">
-          <template #open>
-            <span>是</span>
-          </template>
-          <template #close>
-            <span>否</span>
-          </template>
-        </iSwitch>
-      </div>
       <div class="operation">
         <div class="hd" style="flex-basis: 98px">
-          <span>描边大小</span>
+          <span>Stroke width</span>
         </div>
         <div style="width: 100%">
           <Slider v-model="strokeWidth" :max="50" @on-change="onSliderChange"></Slider>
@@ -48,7 +31,7 @@
 
       <div class="operation" style="justify-content: space-between">
         <div class="hd">
-          <span>描边颜色</span>
+          <span>Stroke color</span>
         </div>
 
         <div>

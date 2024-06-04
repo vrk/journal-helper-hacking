@@ -23,14 +23,23 @@ class WorkspacePlugin {
   static events = ['sizeChange'];
   static apis = ['big', 'small', 'auto', 'one', 'setSize', 'getWorkspase', 'setWorkspaseBg'];
 
-  static cssPixelsPerInch = 96;
-  static dpi = 300;
-  static zoomFactorForInches = this.cssPixelsPerInch / this.dpi;
+  static cssPixelsPerInch = 90;
+
+  private zoomFactorForInches: number;
 
   workspaceEl!: HTMLElement;
   workspaceFabricRect: null | fabric.Rect;
   option: MyOptionType;
-  constructor(fabricCanvas: fabric.Canvas, editor: IEditor) {
+  constructor(
+    fabricCanvas: fabric.Canvas,
+    editor: IEditor,
+    config: {
+      heightInPixels: number;
+      widthInPixels: number;
+      dpi: number;
+    }
+  ) {
+    console.log('workspace constructed');
     this.fabricCanvas = fabricCanvas;
     this.editor = editor;
     this.workspaceFabricRect = null;
@@ -41,14 +50,14 @@ class WorkspacePlugin {
     this.workspaceEl = workspaceEl;
     this.workspaceFabricRect = null;
     this.option = {
-      width: 300 * 1,
-      height: 300 * 1,
+      width: config.widthInPixels,
+      height: config.heightInPixels,
     };
     this._initBackground();
     this._initWorkspace();
     this._initResizeObserve();
     this._bindWheel();
-    const scaleFactor = 96 / 300;
+    this.zoomFactorForInches = WorkspacePlugin.cssPixelsPerInch / config.dpi;
   }
 
   hookImportAfter() {
@@ -98,7 +107,7 @@ class WorkspacePlugin {
     if (this.fabricCanvas.clearHistory) {
       this.fabricCanvas.clearHistory();
     }
-    this.one();
+    this.auto();
   }
 
   // 返回workspace对象
@@ -125,7 +134,7 @@ class WorkspacePlugin {
   _initResizeObserve() {
     const resizeObserver = new ResizeObserver(
       throttle(() => {
-        this.one();
+        this.auto();
       }, 50)
     );
     resizeObserver.observe(this.workspaceEl);
@@ -196,14 +205,13 @@ class WorkspacePlugin {
 
   // 自动缩放
   auto() {
-    debugger;
-    const scale = this._getScale();
+    const scale = this._getScale() * 0.9;
     this.setZoomAuto(scale);
   }
 
   // 1:1 放大
   one() {
-    this.setZoomAuto(1 * WorkspacePlugin.zoomFactorForInches);
+    this.setZoomAuto(1 * this.zoomFactorForInches);
     this.fabricCanvas.requestRenderAll();
   }
 

@@ -270,7 +270,6 @@ class CanvasRuler {
   }
 
   private getDpi() {
-    // console.log(this.options.canvas.dpi);
     return this.options.canvas.dpi ?? 72.0;
   }
 
@@ -280,7 +279,6 @@ class CanvasRuler {
 
   private draw(opt: { isHorizontal: boolean; rulerLength: number; startCalibration: number }) {
     const { isHorizontal, rulerLength, startCalibration } = opt;
-    console.log('hi', rulerLength, startCalibration);
     if (this.options.canvas.units === 'pixels') {
       this.drawForPixels(isHorizontal, rulerLength, startCalibration);
     } else {

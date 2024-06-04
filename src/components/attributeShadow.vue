@@ -9,7 +9,7 @@
 <template>
   <div class="box attr-item-box" v-if="mixinState.mSelectMode === 'one'">
     <!-- <h3>阴影</h3> -->
-    <Divider plain orientation="left"><h4>阴影</h4></Divider>
+    <Divider plain orientation="left"><h4>shadow</h4></Divider>
     <!-- 通用属性 -->
     <div>
       <Row :gutter="10">

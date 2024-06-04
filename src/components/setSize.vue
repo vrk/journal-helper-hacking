@@ -8,66 +8,50 @@
 
 <template>
   <div v-if="!mixinState.mSelectMode" class="attr-item-box">
-    <!-- <h3>{{ $t('bgSeting.size') }}</h3> -->
     <Divider plain orientation="left">
       <h4>{{ $t('bgSeting.size') }}</h4>
     </Divider>
-    <Form :label-width="40" inline class="form-wrap">
-      <FormItem :label="$t('bgSeting.width')" prop="name">
-        <InputNumber disabled v-model="width" readonly @on-change="setSize"></InputNumber>
+    <Form inline class="form-wrap">
+      <FormItem :label="$t('Width')" prop="name">
+        <InputNumber v-model="width" @on-change="setSize"></InputNumber>
       </FormItem>
-      <FormItem :label="$t('bgSeting.height')" prop="name">
-        <InputNumber disabled v-model="height" readonly @on-change="setSize"></InputNumber>
-      </FormItem>
-      <FormItem :label-width="0">
-        <Button type="text" @click="showSetSize">
-          <Icon type="md-create" />
-        </Button>
+      <FormItem :label="$t('Height')" prop="name">
+        <InputNumber v-model="height" @on-change="setSize"></InputNumber>
       </FormItem>
     </Form>
-
-    <!-- <Divider plain></Divider> -->
-    <!-- 修改尺寸 -->
-    <modalSzie :title="$t('setSizeTip')" ref="modalSizeRef" @set="handleConfirm"></modalSzie>
   </div>
 </template>
 
 <script setup name="CanvasSize">
+const props = defineProps(['initialHeight', 'initialWidth', 'initialDpi']);
+
 import useSelect from '@/hooks/select';
-import modalSzie from '@/components/common/modalSzie';
 
 const { mixinState, canvasEditor } = useSelect();
 
-// !!!! PROBABLY CHANGE
-const DefaultSize = {
-  width: 300 * 1,
-  height: 300 * 1,
-};
-
-const modalSizeRef = ref(null);
-
-let width = ref(DefaultSize.width);
-let height = ref(DefaultSize.height);
+let width = ref(props.initialWidth ?? 0);
+let height = ref(props.initialHeight ?? 0);
 
 onMounted(() => {
-  canvasEditor.setSize(width.value, height.value);
+  console.log('set size mounted');
   canvasEditor.on('sizeChange', (w, h) => {
-    width.value = w;
-    height.value = h;
+    console.log('HIIII', canvasEditor.option);
+    const divisor =
+      canvasEditor.fabricCanvas.units === 'pixels' ? 1 : canvasEditor.fabricCanvas.dpi;
+    width.value = w / divisor;
+    height.value = h / divisor;
   });
 });
 
 const setSize = () => {
-  canvasEditor.setSize(width.value, height.value);
-};
-
-const showSetSize = () => {
-  modalSizeRef.value.showSetSize(width.value, height.value);
-};
-const handleConfirm = (w, h) => {
-  width.value = w;
-  height.value = h;
-  setSize();
+  if (canvasEditor.fabricCanvas.units === 'pixels') {
+    canvasEditor.setSize(width.value, height.value);
+  } else {
+    canvasEditor.setSize(
+      width.value * canvasEditor.fabricCanvas.dpi,
+      height.value * canvasEditor.fabricCanvas.dpi
+    );
+  }
 };
 </script>
 
@@ -81,5 +65,6 @@ const handleConfirm = (w, h) => {
 }
 .form-wrap {
   display: flex;
+  flex-direction: column;
 }
 </style>

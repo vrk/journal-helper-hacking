@@ -82,7 +82,11 @@
           <div v-if="state.show" style="padding-top: 10px">
             <!-- 未选择元素时 展示背景设置 -->
             <div v-show="!mixinState.mSelectMode">
-              <set-size></set-size>
+              <set-size
+                :initial-height="DefaultSize.height"
+                :initial-width="DefaultSize.width"
+                :initial-dpi="DefaultDpi"
+              ></set-size>
               <bg-bar></bg-bar>
             </div>
 
@@ -103,7 +107,7 @@
               <group></group>
               <!-- <Divider plain></Divider> -->
               <Divider plain orientation="left">
-                <h4>快捷操作</h4>
+                <h4>Fast operation</h4>
               </Divider>
               <div class="bg-item" v-show="mixinState.mSelectMode">
                 <lock></lock>
@@ -133,14 +137,9 @@
               <attribute-text-content></attribute-text-content>
               <!-- 位置信息 -->
               <attributePostion></attributePostion>
-              <!-- 阴影 -->
-              <attributeShadow></attributeShadow>
-              <!-- 边框 -->
-              <attributeBorder></attributeBorder>
               <!-- 圆角 -->
               <attributeRounded></attributeRounded>
-              <!-- 关联数据 -->
-              <attributeId></attributeId>
+              <!-- <attributeId></attributeId> -->
             </div>
 
             <!-- 新增字体样式使用 -->
@@ -254,6 +253,10 @@ import AttributeTextContent from '@/components/attributeTextContent.vue';
 // Create an editor
 const canvasEditor = new Editor();
 
+const DefaultSize = {
+  width: 5.8 * 2,
+  height: 8.3,
+};
 const DefaultDpi = 300;
 
 const state = reactive({
@@ -311,7 +314,7 @@ onMounted(() => {
     imageSmoothingEnabled: false, // 解决文字导出后不清晰问题
     preserveObjectStacking: true, // 当选择画布中的对象时，让对象不在顶层。
     units: 'inches',
-    dpi: 300,
+    dpi: DefaultDpi,
   });
 
   // 初始化编辑器
@@ -330,7 +333,11 @@ onMounted(() => {
   canvasEditor.use(DrawLinePlugin);
   canvasEditor.use(GroupTextEditorPlugin);
   canvasEditor.use(GroupAlignPlugin);
-  canvasEditor.use(WorkspacePlugin);
+  canvasEditor.use(WorkspacePlugin, {
+    heightInPixels: DefaultSize.height * DefaultDpi,
+    widthInPixels: DefaultSize.width * DefaultDpi,
+    dpi: DefaultDpi,
+  });
   canvasEditor.use(HistoryPlugin);
   canvasEditor.use(FlipPlugin);
   canvasEditor.use(RulerPlugin);
@@ -367,12 +374,12 @@ const rulerSwitch = (val) => {
 const hideToolsBar = () => {
   state.toolsBarShow = !state.toolsBarShow;
 };
-// Display toolbar
+// 展示工具条
 const showToolsBar = (val) => {
   menuActive.value = val;
   state.toolsBarShow = true;
 };
-// Attribute panel switch
+// 属性面板开关
 const switchAttrBar = () => {
   state.attrBarShow = !state.attrBarShow;
 };
@@ -395,7 +402,7 @@ provide('mixinState', mixinState);
     vertical-align: super;
   }
 }
-// Left container
+// 左侧容器
 .left-bar {
   width: 65px;
   height: 100%;

@@ -8,7 +8,7 @@
 <template>
   <div class="box attr-item-box" v-if="mixinState.mSelectMode === 'one'">
     <!-- <h3>位置信息</h3> -->
-    <Divider plain orientation="left"><h4>位置信息</h4></Divider>
+    <Divider plain orientation="left"><h4>location information</h4></Divider>
     <!-- 通用属性 -->
     <div v-show="baseType.includes(mixinState.mSelectOneType)">
       <Row :gutter="10">
