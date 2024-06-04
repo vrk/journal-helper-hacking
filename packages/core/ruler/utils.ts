@@ -6,7 +6,7 @@ import { fabric } from 'fabric';
  * @param zoom 缩放比例
  * @returns 返回计算出的尺子间距
  */
-const getGap = (zoom: number) => {
+const getGapForPixels = (zoom: number) => {
   const zooms = [0.02, 0.03, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 18];
   const gaps = [5000, 2500, 1000, 500, 250, 100, 50, 25, 10, 5, 2];
 
@@ -19,7 +19,7 @@ const getGap = (zoom: number) => {
 };
 
 /**
- * 线段合并
+ * Wire merger
  * @param rect Rect数组
  * @param isHorizontal
  * @returns 合并后的Rect数组
@@ -71,7 +71,7 @@ const darwLine = (
   ctx.restore();
 };
 
-const darwText = (
+const drawText = (
   ctx: CanvasRenderingContext2D,
   options: {
     left: number;
@@ -157,4 +157,11 @@ const drawMask = (
   ctx.restore();
 };
 
-export { getGap, mergeLines, darwRect, darwText, darwLine, drawMask };
+export {
+  getGapForPixels as getGap,
+  mergeLines,
+  darwRect,
+  drawText as darwText,
+  darwLine,
+  drawMask,
+};

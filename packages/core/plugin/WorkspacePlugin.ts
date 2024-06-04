@@ -14,6 +14,8 @@ type IEditor = Editor;
 type MyOptionType = {
   width: number;
   height: number;
+  units: 'pixels' | 'inches';
+  dpi?: number;
 };
 
 class WorkspacePlugin {
@@ -41,6 +43,8 @@ class WorkspacePlugin {
     this.option = {
       width: 900,
       height: 2000,
+      units: 'inches',
+      dpi: 300,
     };
     this._initBackground();
     this._initWorkspace();

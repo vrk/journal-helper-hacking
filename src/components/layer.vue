@@ -81,15 +81,15 @@ const textType = (type, item) => {
     return item.name || item.text;
   }
   const typeText = {
-    group: '组合',
-    image: '图片',
-    rect: '矩形',
+    group: 'combination',
+    image: 'picture',
+    rect: 'rectangle',
     circle: '圆形',
-    triangle: '三角形',
-    polygon: '多边形',
-    path: '路径',
+    triangle: 'triangle',
+    polygon: 'Polygonal',
+    path: 'path',
   };
-  return typeText[type] || '默认元素';
+  return typeText[type] || 'Default element';
 };
 // 选中元素
 const select = (id) => {

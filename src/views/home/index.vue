@@ -254,6 +254,8 @@ import AttributeTextContent from '@/components/attributeTextContent.vue';
 // Create an editor
 const canvasEditor = new Editor();
 
+const DefaultDpi = 300;
+
 const state = reactive({
   menuActive: 1,
   show: false,
@@ -261,6 +263,8 @@ const state = reactive({
   attrBarShow: true,
   select: null,
   ruler: true,
+  units: 'pixels' | 'inches',
+  dpi: DefaultDpi,
 });
 
 // Left menu rendering
@@ -327,7 +331,10 @@ onMounted(() => {
   canvasEditor.use(WorkspacePlugin);
   canvasEditor.use(HistoryPlugin);
   canvasEditor.use(FlipPlugin);
-  canvasEditor.use(RulerPlugin);
+  canvasEditor.use(RulerPlugin, {
+    units: state.units,
+    dpi: state.dpi,
+  });
   canvasEditor.use(DrawPolygonPlugin);
   canvasEditor.use(FreeDrawPlugin);
   canvasEditor.use(PathTextPlugin);

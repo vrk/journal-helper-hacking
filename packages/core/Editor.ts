@@ -113,13 +113,13 @@ class Editor extends EventEmitter {
     });
   }
 
-  // 保存组件自定义事件与API
+  // Save the component custom event and API
   private _saveCustomAttr(plugin: IPluginClass) {
     const { events = [], apis = [] } = plugin;
     this.customApis = this.customApis.concat(apis);
     this.customEvents = this.customEvents.concat(events);
   }
-  // 代理API事件
+  // Agent API event
   private _bindingApis(pluginRunTime: IPluginTempl) {
     const { apis = [] } = (pluginRunTime.constructor as any) || {};
     apis.forEach((apiName: string) => {

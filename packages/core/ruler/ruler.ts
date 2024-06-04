@@ -1,7 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Canvas, Point, IEvent } from 'fabric/fabric-impl';
 import { fabric } from 'fabric';
-import { getGap, mergeLines, darwRect, darwText, darwLine, drawMask } from './utils';
+import {
+  getGap as getGapForPixels,
+  mergeLines,
+  darwRect as drawRect,
+  darwText as drawText,
+  darwLine as drawLine,
+  drawMask,
+} from './utils';
 import { throttle } from 'lodash-es';
 import { setupGuideLine } from './guideline';
 
@@ -124,6 +131,8 @@ class CanvasRuler {
         borderColor: '#ddd',
         highlightColor: '#007fff',
         textColor: '#888',
+        units: 'pixels',
+        dpi: 72,
       },
       _options
     );
@@ -269,14 +278,14 @@ class CanvasRuler {
     const { isHorizontal, rulerLength, startCalibration } = opt;
     const zoom = this.getZoom();
 
-    const gap = getGap(zoom);
+    const gap = getGapForPixels(zoom);
     const unitLength = rulerLength / zoom;
     const startValue = Math[startCalibration > 0 ? 'floor' : 'ceil'](startCalibration / gap) * gap;
     const startOffset = startValue - startCalibration;
 
-    // 标尺背景
+    // Benchmark background
     const canvasSize = this.getSize();
-    darwRect(this.ctx, {
+    drawRect(this.ctx, {
       left: 0,
       top: 0,
       width: isHorizontal ? canvasSize.width : this.options.ruleSize,
@@ -285,9 +294,9 @@ class CanvasRuler {
       stroke: this.options.borderColor,
     });
 
-    // 颜色
+    // color
     const textColor = new fabric.Color(this.options.textColor);
-    // 标尺文字显示
+    // Label ruler text display
     for (let i = 0; i + startOffset <= Math.ceil(unitLength); i += gap) {
       const position = (startOffset + i) * zoom;
       const textValue = startValue + i + '';
@@ -298,8 +307,8 @@ class CanvasRuler {
       const textY = isHorizontal
         ? this.options.ruleSize / 2 - this.options.fontSize / 2 - 4
         : position + textLength;
-      darwText(this.ctx, {
-        text: textValue,
+      drawText(this.ctx, {
+        text: 'meow',
         left: textX,
         top: textY,
         fill: textColor.toRgb(),
@@ -314,7 +323,7 @@ class CanvasRuler {
       const top = isHorizontal ? this.options.ruleSize - 8 : position;
       const width = isHorizontal ? 0 : 8;
       const height = isHorizontal ? 8 : 0;
-      darwLine(this.ctx, {
+      drawLine(this.ctx, {
         left,
         top,
         width,
@@ -341,32 +350,12 @@ class CanvasRuler {
 
         const isSameText = leftTextVal === rightTextVal;
 
-        // 背景遮罩
-        const maskOpt = {
-          isHorizontal,
-          width: isHorizontal ? 160 : this.options.ruleSize - 8,
-          height: isHorizontal ? this.options.ruleSize - 8 : 160,
-          backgroundColor: this.options.backgroundColor,
-        };
-        drawMask(this.ctx, {
-          ...maskOpt,
-          left: isHorizontal ? rect.left - 80 : 0,
-          top: isHorizontal ? 0 : rect.top - 80,
-        });
-        if (!isSameText) {
-          drawMask(this.ctx, {
-            ...maskOpt,
-            left: isHorizontal ? rect.width + rect.left - 80 : 0,
-            top: isHorizontal ? 0 : rect.height + rect.top - 80,
-          });
-        }
-
         // 颜色
         const highlightColor = new fabric.Color(this.options.highlightColor);
 
-        // 高亮遮罩
+        // Highlighten
         highlightColor.setAlpha(0.5);
-        darwRect(this.ctx, {
+        drawRect(this.ctx, {
           left: isHorizontal ? rect.left : this.options.ruleSize - 8,
           top: isHorizontal ? this.options.ruleSize - 8 : rect.top,
           width: isHorizontal ? rect.width : 8,
@@ -374,33 +363,34 @@ class CanvasRuler {
           fill: highlightColor.toRgba(),
         });
 
-        // 两边的数字
-        const pad = this.options.ruleSize / 2 - this.options.fontSize / 2 - 4;
+        // This is ruler stuff upon selection - let's ignore for now
+        // Numbers on both sides
+        // const pad = this.options.ruleSize / 2 - this.options.fontSize / 2 - 4;
+        // const textOpt = {
+        //   fill: highlightColor.toRgba(),
+        //   angle: isHorizontal ? 0 : -90,
+        // };
 
-        const textOpt = {
-          fill: highlightColor.toRgba(),
-          angle: isHorizontal ? 0 : -90,
-        };
+        // drawText(this.ctx, {
+        //   ...textOpt,
+        //   text: 'lefto',
+        //   left: isHorizontal ? rect.left - 2 : pad,
+        //   top: isHorizontal ? pad : rect.top - 2,
+        //   align: isSameText ? 'center' : isHorizontal ? 'right' : 'left',
+        // });
 
-        darwText(this.ctx, {
-          ...textOpt,
-          text: leftTextVal,
-          left: isHorizontal ? rect.left - 2 : pad,
-          top: isHorizontal ? pad : rect.top - 2,
-          align: isSameText ? 'center' : isHorizontal ? 'right' : 'left',
-        });
+        // if (!isSameText) {
+        //   drawText(this.ctx, {
+        //     ...textOpt,
+        //     text: 'righto',
+        //     left: isHorizontal ? rect.left + rect.width + 2 : pad,
+        //     top: isHorizontal ? pad : rect.top + rect.height + 2,
+        //     align: isHorizontal ? 'left' : 'right',
+        //   });
+        // }
 
-        if (!isSameText) {
-          darwText(this.ctx, {
-            ...textOpt,
-            text: rightTextVal,
-            left: isHorizontal ? rect.left + rect.width + 2 : pad,
-            top: isHorizontal ? pad : rect.top + rect.height + 2,
-            align: isHorizontal ? 'left' : 'right',
-          });
-        }
+        // Lines around the object highlight
 
-        // 两边的线
         const lineSize = isSameText ? 8 : 14;
 
         highlightColor.setAlpha(1);
@@ -411,14 +401,14 @@ class CanvasRuler {
           stroke: highlightColor.toRgba(),
         };
 
-        darwLine(this.ctx, {
+        drawLine(this.ctx, {
           ...lineOpt,
           left: isHorizontal ? rect.left : this.options.ruleSize - lineSize,
           top: isHorizontal ? this.options.ruleSize - lineSize : rect.top,
         });
 
         if (!isSameText) {
-          darwLine(this.ctx, {
+          drawLine(this.ctx, {
             ...lineOpt,
             left: isHorizontal ? rect.left + rect.width : this.options.ruleSize - lineSize,
             top: isHorizontal ? this.options.ruleSize - lineSize : rect.top + rect.height,
