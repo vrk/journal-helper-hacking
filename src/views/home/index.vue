@@ -254,8 +254,8 @@ import AttributeTextContent from '@/components/attributeTextContent.vue';
 const canvasEditor = new Editor();
 
 const DefaultSize = {
-  width: 5.8 * 2,
-  height: 8.3,
+  width: 8.5,
+  height: 11,
 };
 const DefaultDpi = 300;
 
@@ -308,11 +308,11 @@ const leftBar = ref([
 onMounted(() => {
   // 初始化fabric
   const canvas = new fabric.Canvas('canvas', {
-    fireRightClick: true, // 启用右键，button的数字为3
-    stopContextMenu: true, // 禁止默认右键菜单
-    controlsAboveOverlay: true, // 超出clipPath后仍然展示控制条
-    imageSmoothingEnabled: false, // 解决文字导出后不清晰问题
-    preserveObjectStacking: true, // 当选择画布中的对象时，让对象不在顶层。
+    fireRightClick: true, // Right -click, the number of Button is 3
+    stopContextMenu: true, // By default right -click menu
+    controlsAboveOverlay: true, // After beyond the clippath, the control bar still shows
+    imageSmoothingEnabled: false, // Unclear problems after solving text export
+    preserveObjectStacking: true, // When selecting the object in the canvas, the object is not on the top.
     units: 'inches',
     dpi: DefaultDpi,
   });

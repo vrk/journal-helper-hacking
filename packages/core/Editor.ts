@@ -6,6 +6,8 @@ import { AsyncSeriesHook } from 'tapable';
 
 class Editor extends EventEmitter {
   private canvas: fabric.Canvas | null = null;
+  private printableCanvases: Array<fabric.Canvas> = [];
+
   contextMenu: ContextMenu | null = null;
   [key: string]: any;
   private pluginMap: {
@@ -28,6 +30,15 @@ class Editor extends EventEmitter {
 
   init(canvas: fabric.Canvas) {
     this.canvas = canvas;
+    const newPrintable = new fabric.Canvas('canvas', {
+      fireRightClick: true, // Right -click, the number of Button is 3
+      stopContextMenu: true, // By default right -click menu
+      controlsAboveOverlay: true, // After beyond the clippath, the control bar still shows
+      imageSmoothingEnabled: false, // Unclear problems after solving text export
+      preserveObjectStacking: true, // When selecting the object in the canvas, the object is not on the top.
+    });
+
+    this.printableCanvases = [newPrintable];
     this._initContextMenu();
     this._bindContextMenu();
     this._initActionHooks();
@@ -36,6 +47,10 @@ class Editor extends EventEmitter {
 
   get fabricCanvas() {
     return this.canvas;
+  }
+
+  get printableFabricCanvases() {
+    return this.printableCanvases;
   }
 
   // Introduce component

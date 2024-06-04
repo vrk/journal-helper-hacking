@@ -1,9 +1,9 @@
 /*
- * @Author: 秦少卫
+ * @Author: Qin Shaowei
  * @Date: 2023-06-20 12:52:09
- * @LastEditors: June 1601745371@qq.com
- * @LastEditTime: 2024-05-23 17:56:15
- * @Description: 内部插件
+ * @Lasteditors: june 1601745371@qq.com
+ * @Lastedittime: 2024-05-23 17:56:15
+ * @Descripting: Internal plug -in
  */
 import { v4 as uuid } from 'uuid';
 import { selectFiles, clipboardText, downFile } from './utils/utils';

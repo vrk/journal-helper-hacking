@@ -11,7 +11,7 @@
     v-if="mixinState.mSelectMode === 'one' && rectType.includes(mixinState.mSelectOneType)"
   >
     <!-- <h3>圆角</h3> -->
-    <Divider plain orientation="left"><h4>圆角</h4></Divider>
+    <Divider plain orientation="left"><h4>Rounded corner</h4></Divider>
     <!-- 通用属性 -->
     <div>
       <Row :gutter="10">
