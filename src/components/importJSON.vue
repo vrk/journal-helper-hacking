@@ -8,28 +8,7 @@
 
 <template>
   <div style="display: inline-block">
-    <Dropdown @on-click="clickHandler">
-      <a href="javascript:void(0)">
-        {{ $t('importFiles.file') }}
-        <Icon type="ios-arrow-down"></Icon>
-      </a>
-      <template #list>
-        <DropdownMenu>
-          <DropdownItem name="createDesign">
-            {{ $t('importFiles.createDesign.title') }}
-          </DropdownItem>
-          <DropdownItem name="importFiles">{{ $t('importFiles.importFiles') }}</DropdownItem>
-          <DropdownItem name="psd">PSD</DropdownItem>
-        </DropdownMenu>
-      </template>
-    </Dropdown>
-
-    <!-- 创建设计 -->
-    <modalSzie
-      :title="$t('importFiles.createDesign.title')"
-      ref="modalSizeRef"
-      @set="customSizeCreate"
-    ></modalSzie>
+    <Button @click="clickHandler">Open</Button>
   </div>
 </template>
 
@@ -45,20 +24,7 @@ const { createTmpl, routerToId } = useMaterial();
 const modalSizeRef = ref(null);
 
 const clickHandler = (type) => {
-  const handleMap = {
-    // 导入文件
-    importFiles: canvasEditor.insert,
-    // 创建文件
-    createDesign,
-    // psd
-    psd: () => {
-      // Spin.show({
-      //   render: (h) => h('div', t('alert.loading_data')),
-      // });
-      canvasEditor.insertPSD().finally(Spin.hide);
-    },
-  };
-  handleMap[type]?.();
+  canvasEditor.insert();
 };
 
 const createDesign = () => {

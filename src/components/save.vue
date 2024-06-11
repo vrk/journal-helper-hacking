@@ -10,22 +10,16 @@
 
 <template>
   <div class="save-box">
-    <Button style="margin-left: 10px" type="text" @click="beforeClear">
-      {{ $t('save.empty') }}
-    </Button>
+    <Button style="margin-left: 10px" type="text" @click="beforeClear">Clear</Button>
     <Dropdown style="margin-left: 10px" @on-click="saveWith">
       <Button type="primary">
-        {{ $t('save.down') }}
+        Save
         <Icon type="ios-arrow-down"></Icon>
       </Button>
       <template #list>
         <DropdownMenu>
-          <DropdownItem name="saveMyClould">{{ $t('save.save_my_spase') }}</DropdownItem>
-          <DropdownItem name="saveImg" divided>{{ $t('save.save_as_picture') }}</DropdownItem>
-          <DropdownItem name="saveSvg">{{ $t('save.save_as_svg') }}</DropdownItem>
-          <DropdownItem name="clipboard" divided>{{ $t('save.copy_to_clipboard') }}</DropdownItem>
-          <DropdownItem name="clipboardBase64">{{ $t('save.copy_to_clipboardstr') }}</DropdownItem>
-          <DropdownItem name="saveJson" divided>{{ $t('save.save_as_json') }}</DropdownItem>
+          <DropdownItem name="saveImg" divided>Save Image</DropdownItem>
+          <DropdownItem name="saveJson" divided>Save File</DropdownItem>
         </DropdownMenu>
       </template>
     </Dropdown>

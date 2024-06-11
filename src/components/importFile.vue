@@ -10,7 +10,7 @@
   <div style="display: inline-block">
     <Dropdown transfer-class-name="fix" @on-click="insertTypeHand">
       <a href="javascript:void(0)">
-        {{ $t('insertFile.insert') }}
+        Insert
         <Icon type="ios-arrow-down"></Icon>
       </a>
       <template #list>
