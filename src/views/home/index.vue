@@ -269,7 +269,7 @@ onMounted(() => {
   }
 });
 
-onUnmounted(() => canvasEditor.destory());
+onUnmounted(() => canvasEditor.destroy());
 const rulerSwitch = (val) => {
   if (val) {
     canvasEditor.rulerEnable();

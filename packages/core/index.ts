@@ -1,9 +1,3 @@
-/*
- * @Author: Qin Shaowei
- * @Date: 2023-02-03 23:29:34
- * @Lasteditors: Qin Shaowei
- * @Lastedittime: 2024-05-27 16:09:57
- * @Descripting: Core entrance file */
 import Editor from './Editor';
 export { default as DringPlugin } from './plugin/DringPlugin';
 export { default as AlignGuidLinePlugin } from './plugin/AlignGuidLinePlugin';
@@ -12,6 +6,7 @@ export { default as ControlsRotatePlugin } from './plugin/ControlsRotatePlugin';
 export { default as CenterAlignPlugin } from './plugin/CenterAlignPlugin';
 export { default as LayerPlugin } from './plugin/LayerPlugin';
 export { default as CopyPlugin } from './plugin/CopyPlugin';
+export { default as SelectPlugin } from './plugin/SelectPlugin';
 export { default as MoveHotKeyPlugin } from './plugin/MoveHotKeyPlugin';
 export { default as DeleteHotKeyPlugin } from './plugin/DeleteHotKeyPlugin';
 export { default as GroupPlugin } from './plugin/GroupPlugin';

@@ -30,7 +30,7 @@ export default class FlipPlugin {
     if (selectedMode === SelectMode.ONE) {
       return [
         {
-          text: '翻转',
+          text: 'Flip',
           hotkey: '❯',
           subitems: [
             {

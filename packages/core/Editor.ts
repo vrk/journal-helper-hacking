@@ -67,9 +67,12 @@ class Editor extends EventEmitter {
     }
   }
 
-  destory() {
+  destroy() {
     this.canvas = null;
     this.contextMenu = null;
+    for (const [name, pluginRuntime] of Object.entries(this.pluginMap)) {
+      pluginRuntime.destroy();
+    }
     this.pluginMap = {};
     this.customEvents = [];
     this.customApis = [];
