@@ -16,12 +16,10 @@
 import { Utils } from '@kuaitu/core';
 const { getImgStr, selectFiles } = Utils;
 import { v4 as uuid } from 'uuid';
-// import initializeLineDrawing from '@/core/remove/initializeLineDrawing';
-import { getPolygonVertices } from '@/utils/math';
 import useSelect from '@/hooks/select';
 import useCalculate from '@/hooks/useCalculate';
 import { useI18n } from 'vue-i18n';
-import setSize from '@/components/setSize.vue';
+import { store } from '@/hooks/store';
 
 const LINE_TYPE = {
   polygon: 'polygon',
@@ -44,17 +42,18 @@ const state = reactive({
 });
 
 const insertImage = () => {
-  selectFiles({ accept: 'image/*', multiple: true }).then((fileList) => {
+  selectFiles({ accept: 'image/*', multiple: false }).then((fileList) => {
     Array.from(fileList).forEach((item) => {
+      console.log(item);
       getImgStr(item).then((file) => {
-        insertImgFile(file);
+        insertImgFile(file, item.name);
       });
     });
   });
 };
 
 // Insert picture file
-function insertImgFile(file) {
+function insertImgFile(file, name) {
   if (!file) throw new Error('file is undefined');
   const imgEl = document.createElement('img');
   imgEl.src = file;
@@ -64,10 +63,11 @@ function insertImgFile(file) {
     // Create a picture object
     const imgInstance = new fabric.Image(imgEl, {
       id: uuid(),
-      name: '图片1',
-      left: 100,
-      top: 100,
+      name: name,
+      left: store.lastInsertCoords.left,
+      top: store.lastInsertCoords.top,
     });
+    console.log('name', name);
     // Set the zoom
     canvasEditor.canvas.add(imgInstance);
     canvasEditor.canvas.setActiveObject(imgInstance);

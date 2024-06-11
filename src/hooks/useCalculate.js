@@ -10,10 +10,10 @@
 export default function useCalculate() {
   const canvasEditor = inject('canvasEditor');
 
-  // 获取画布的DOMRect对象
+  // Get the DOMRect of the canvas
   const getCanvasBound = () => canvasEditor.canvas.getSelectionElement().getBoundingClientRect();
 
-  // 判断拖拽结束的坐标是否在画布外
+  // Determine whether the coordinates of the end of the drag and dragging are outside the canvas
   const isOutsideCanvas = (x, y) => {
     const { left, right, top, bottom } = getCanvasBound();
     return x < left || x > right || y < top || y > bottom;

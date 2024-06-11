@@ -34,7 +34,6 @@ class CopyPlugin {
     // Spacing settings
     const grid = 10;
     const canvas = this.canvas;
-    console.log('_copyActiveSelection', activeObject);
     activeObject?.clone((cloned: fabric.Object) => {
       // Cingle again, processing the situation of multiple objects
       cloned.clone((clonedObj: fabric.ActiveSelection) => {
@@ -66,7 +65,6 @@ class CopyPlugin {
     // Spacing settings
     const grid = 10;
     const canvas = this.canvas;
-    console.log('_copyObject', activeObject);
     activeObject?.clone((cloned: fabric.Object) => {
       if (cloned.left === undefined || cloned.top === undefined) return;
       canvas.discardActiveObject();
@@ -85,7 +83,6 @@ class CopyPlugin {
 
   // 复制元素
   clone(paramsActiveObeject?: fabric.ActiveSelection | fabric.Object) {
-    console.log('cloning');
     const activeObject = paramsActiveObeject || this.canvas.getActiveObject();
     if (!activeObject) return;
     // if (paramsActiveObeject) {
@@ -97,14 +94,12 @@ class CopyPlugin {
 
   // Shortcut key extension recovery
   async hotkeyEvent(eventName: string, e: any) {
-    console.log('hotkey event', eventName);
     if (eventName === COPY_COMMAND && e.type === 'keydown') {
       const activeObject = this.canvas.getActiveObject();
       if (!activeObject) {
         return;
       }
       const objectAsJson = JSON.stringify(activeObject.toJSON());
-      console.log(objectAsJson);
       return navigator.clipboard.writeText(objectAsJson);
     } else if (eventName === PASTE_COMMAND && e.type === 'keydown') {
       if (this.cache) {
@@ -140,20 +135,47 @@ class CopyPlugin {
           const canvas = this.canvas;
           if (parsed.version) {
             // then we know this is another FabricJS object
-            fabric.util.enlivenObjects(
-              [parsed],
-              (objects: any) => {
-                objects.forEach(function (o: any) {
-                  o.left = o.left += 0.2 * canvas.dpi;
-                  o.top = o.top += 0.2 * canvas.dpi;
-                  o.id = uuid();
-                  canvas.add(o);
-                  canvas.setActiveObject(o);
-                  canvas.renderAll();
-                });
-              },
-              'fabric'
-            );
+            if (parsed.type === 'activeSelection') {
+              fabric.util.enlivenObjects(
+                parsed.objects,
+                (objects: any) => {
+                  objects.forEach(function (obj: any) {
+                    const objectLeft = obj.left;
+                    const group = parsed;
+                    const objectTop = obj.top;
+                    const groupLeft = group.left;
+                    const groupTop = group.top;
+                    const objectInGroupLeft = objectLeft + groupLeft + group.width / 2;
+                    const objectInGroupTop = objectTop + groupTop + group.height / 2;
+                    obj.left = objectInGroupLeft + 0.2 * canvas.dpi;
+                    obj.top = objectInGroupTop + 0.2 * canvas.dpi;
+                    obj.id = uuid();
+                    canvas.add(obj);
+                  });
+                  const sel = new fabric.ActiveSelection(objects, {
+                    canvas: canvas,
+                  });
+                  canvas.setActiveObject(sel);
+                  canvas.requestRenderAll();
+                },
+                'fabric'
+              );
+            } else {
+              fabric.util.enlivenObjects(
+                [parsed],
+                (objects: any) => {
+                  objects.forEach(function (obj: any) {
+                    obj.left = obj.left + 0.2 * canvas.dpi;
+                    obj.top = obj.top + 0.2 * canvas.dpi;
+                    obj.id = uuid();
+                    canvas.add(obj);
+                    canvas.setActiveObject(obj);
+                  });
+                  canvas.requestRenderAll();
+                },
+                'fabric'
+              );
+            }
           } else if (item.types.includes('image/png')) {
             const blob = await item.getType('image/png');
           }

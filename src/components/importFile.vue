@@ -58,6 +58,7 @@ const HANDLEMAP = {
   insertImg: function () {
     selectFiles({ accept: 'image/*', multiple: true }).then((fileList) => {
       Array.from(fileList).forEach((item) => {
+        console.log(item);
         getImgStr(item).then((file) => {
           insertImgFile(file);
         });
@@ -107,14 +108,14 @@ function insertImgFile(file) {
     // 创建图片对象
     const imgInstance = new fabric.Image(imgEl, {
       id: uuid(),
-      name: '图片1',
+      name: 'image',
       left: 100,
       top: 100,
     });
     // 设置缩放
     canvasEditor.canvas.add(imgInstance);
     canvasEditor.canvas.setActiveObject(imgInstance);
-    canvasEditor.canvas.renderAll();
+    canvasEditor.canvas.requestRenderAll();
     // 删除页面中的图片元素
     imgEl.remove();
   };
