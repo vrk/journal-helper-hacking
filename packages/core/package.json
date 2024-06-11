@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@webtoon/psd": "^0.4.0",
+    "changedpi": "^1.0.4",
     "events": "^3.3.0",
     "fabric-history": "^1.7.0",
     "fontfaceobserver": "^2.1.0",
