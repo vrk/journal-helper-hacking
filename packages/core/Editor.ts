@@ -6,7 +6,6 @@ import { AsyncSeriesHook } from 'tapable';
 
 class Editor extends EventEmitter {
   private canvas: fabric.Canvas | null = null;
-  private printableCanvases: Array<fabric.Canvas> = [];
 
   contextMenu: ContextMenu | null = null;
   [key: string]: any;
@@ -30,15 +29,6 @@ class Editor extends EventEmitter {
 
   init(canvas: fabric.Canvas) {
     this.canvas = canvas;
-    const newPrintable = new fabric.Canvas('canvas', {
-      fireRightClick: true, // Right -click, the number of Button is 3
-      stopContextMenu: true, // By default right -click menu
-      controlsAboveOverlay: true, // After beyond the clippath, the control bar still shows
-      imageSmoothingEnabled: false, // Unclear problems after solving text export
-      preserveObjectStacking: true, // When selecting the object in the canvas, the object is not on the top.
-    });
-
-    this.printableCanvases = [newPrintable];
     this._initContextMenu();
     this._bindContextMenu();
     this._initActionHooks();
@@ -47,10 +37,6 @@ class Editor extends EventEmitter {
 
   get fabricCanvas() {
     return this.canvas;
-  }
-
-  get printableFabricCanvases() {
-    return this.printableCanvases;
   }
 
   // Introduce component
@@ -151,20 +137,22 @@ class Editor extends EventEmitter {
 
   // 右键菜单
   private _bindContextMenu() {
-    this.canvas &&
-      this.canvas.on('mouse:down', (opt) => {
-        if (opt.button === 3) {
-          let menu: IPluginMenu[] = [];
-          Object.keys(this.pluginMap).forEach((pluginName) => {
-            const pluginRunTime = this.pluginMap[pluginName];
-            const pluginMenu = pluginRunTime.contextMenu && pluginRunTime.contextMenu();
-            if (pluginMenu) {
-              menu = menu.concat(pluginMenu);
-            }
-          });
-          this._renderMenu(opt, menu);
-        }
-      });
+    if (!this.canvas) {
+      return;
+    }
+    this.canvas.on('mouse:down', (opt) => {
+      if (opt.button === 3) {
+        let menu: IPluginMenu[] = [];
+        Object.keys(this.pluginMap).forEach((pluginName) => {
+          const pluginRunTime = this.pluginMap[pluginName];
+          const pluginMenu = pluginRunTime.contextMenu && pluginRunTime.contextMenu();
+          if (pluginMenu) {
+            menu = menu.concat(pluginMenu);
+          }
+        });
+        this._renderMenu(opt, menu);
+      }
+    });
   }
 
   // 渲染右键菜单

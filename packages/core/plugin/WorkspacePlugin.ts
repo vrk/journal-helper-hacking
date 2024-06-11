@@ -22,12 +22,23 @@ class WorkspacePlugin {
   public editor: IEditor;
   static pluginName = 'WorkspacePlugin';
   static events = ['sizeChange'];
-  static apis = ['big', 'small', 'auto', 'one', 'setSize', 'getWorkspase', 'setWorkspaseBg'];
+  static apis = [
+    'big',
+    'small',
+    'auto',
+    'one',
+    'setSize',
+    'getWorkspase',
+    'setWorkspaseBg',
+    'clippingEnable',
+    'clippingDisable',
+  ];
 
   static cssPixelsPerInch = 90;
 
   workspaceEl!: HTMLElement;
   workspaceFabricRect: null | fabric.Rect;
+  workspaceClippingRect: undefined | fabric.Object;
   option: MyOptionType;
   constructor(
     fabricCanvas: fabric.Canvas,
@@ -114,6 +125,11 @@ class WorkspacePlugin {
       this.fabricCanvas.clearHistory();
     }
     this.auto();
+
+    // Do not display beyond the drawing cloth
+    this.workspaceFabricRect.clone((cloned: fabric.Object) => {
+      this.workspaceClippingRect = cloned;
+    });
   }
 
   // 返回workspace对象
@@ -144,6 +160,16 @@ class WorkspacePlugin {
       }, 50)
     );
     resizeObserver.observe(this.workspaceEl);
+  }
+
+  clippingEnable() {
+    this.fabricCanvas.clipPath = this.workspaceClippingRect;
+    this.fabricCanvas.requestRenderAll();
+  }
+
+  clippingDisable() {
+    this.fabricCanvas.clipPath = undefined;
+    this.fabricCanvas.requestRenderAll();
   }
 
   setSize(width: number | undefined, height: number | undefined, dpi: number | undefined) {
@@ -183,11 +209,6 @@ class WorkspacePlugin {
     if (!this.workspaceFabricRect) return;
     this.setCenterFromObject(this.workspaceFabricRect);
 
-    // 超出画布不展示
-    this.workspaceFabricRect.clone((cloned: fabric.Rect) => {
-      this.fabricCanvas.clipPath = cloned;
-      this.fabricCanvas.requestRenderAll();
-    });
     if (cb) cb(this.workspaceFabricRect.left, this.workspaceFabricRect.top);
   }
 

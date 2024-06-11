@@ -6,6 +6,7 @@ export function createEditor() {
   const canvasElement = document.createElement('canvas');
   canvasElement.id = 'canvas';
   const canvas = new fabric.Canvas('canvas', {
+    fireMiddleClick: true,
     fireRightClick: true,
     stopContextMenu: true,
     controlsAboveOverlay: true,

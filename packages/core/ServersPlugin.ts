@@ -62,12 +62,12 @@ class ServersPlugin {
 
   private _emitSelectEvent() {
     if (!this.canvas) {
-      throw TypeError('还未初始化');
+      throw TypeError('Not initialized yet');
     }
 
     const actives = this.canvas
       .getActiveObjects()
-      .filter((item) => !(item instanceof fabric.GuideLine)); // 过滤掉辅助线
+      .filter((item) => !(item instanceof fabric.GuideLine)); // Filter the auxiliary line
     if (actives && actives.length === 1) {
       this.selectedMode = SelectMode.ONE;
       this.editor.emit(SelectEvent.ONE, actives);

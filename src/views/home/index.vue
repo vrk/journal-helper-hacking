@@ -217,6 +217,7 @@ const leftBar = ref([
 onMounted(() => {
   // 初始化fabric
   const canvas = new fabric.Canvas('canvas', {
+    fireMiddleClick: true, // Right -click, the number of Button is 3
     fireRightClick: true, // Right -click, the number of Button is 3
     stopContextMenu: true, // By default right -click menu
     controlsAboveOverlay: true, // After beyond the clippath, the control bar still shows
@@ -268,6 +269,7 @@ onMounted(() => {
   // 默认打开标尺
   if (state.ruler) {
     canvasEditor.rulerEnable();
+    canvasEditor.clippingDisable();
   }
 });
 
@@ -275,8 +277,10 @@ onUnmounted(() => canvasEditor.destroy());
 const rulerSwitch = (val) => {
   if (val) {
     canvasEditor.rulerEnable();
+    canvasEditor.clippingDisable();
   } else {
     canvasEditor.rulerDisable();
+    canvasEditor.clippingEnable();
   }
 };
 

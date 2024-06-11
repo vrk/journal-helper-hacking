@@ -32,6 +32,7 @@ class ContextMenu {
     };
 
     this._oncontextmenu = (e) => {
+      console.log('here');
       e.preventDefault();
       if (
         e.target != this.dom &&
@@ -251,7 +252,7 @@ class ContextMenu {
     this.items = data;
   }
 
-  uninstall() {
+  destroy() {
     this.dom = null;
     // this.container.removeEventListener('contextmenu', this._oncontextmenu);
     this.container.removeEventListener('keydown', this._oncontextmenu_keydown);

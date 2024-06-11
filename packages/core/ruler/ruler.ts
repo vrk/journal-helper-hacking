@@ -240,7 +240,7 @@ class CanvasRuler {
       // startCalibration: -(vpt[5] / vpt[3]),
       startCalibration: this.startCalibration?.y ? this.startCalibration.y : -(vpt[5] / vpt[3]),
     });
-    // 绘制左上角的遮罩
+    // Draw a mask in the upper left corner
     drawMask(this.ctx, {
       isHorizontal: true,
       left: -10,
