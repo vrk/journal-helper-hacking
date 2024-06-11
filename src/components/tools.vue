@@ -1,6 +1,11 @@
 <template>
   <div>
     <Divider plain orientation="left">{{ $t('common_elements') }}</Divider>
+    <set-size
+      :initial-height="DefaultSize.height"
+      :initial-width="DefaultSize.width"
+      :initial-dpi="DefaultDpi"
+    ></set-size>
     <div class="tool-box">
       <span @click="() => addText()" :draggable="true" @dragend="onDragend('text', $event)">
         <svg
@@ -220,6 +225,12 @@ import { getPolygonVertices } from '@/utils/math';
 import useSelect from '@/hooks/select';
 import useCalculate from '@/hooks/useCalculate';
 import { useI18n } from 'vue-i18n';
+import setSize from '@/components/setSize.vue';
+const DefaultSize = {
+  width: 8.5,
+  height: 11,
+};
+const DefaultDpi = 300;
 
 const LINE_TYPE = {
   polygon: 'polygon',

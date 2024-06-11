@@ -37,9 +37,7 @@
 
         <div style="float: right">
           <!-- Preview -->
-          <previewCurrent />
           <save></save>
-          <lang></lang>
         </div>
       </Header>
       <Content style="display: flex; height: calc(100vh - 64px)">
@@ -81,14 +79,6 @@
         <div class="right-bar" v-show="state.attrBarShow">
           <div v-if="state.show" style="padding-top: 10px">
             <!-- 未选择元素时 展示背景设置 -->
-            <div v-show="!mixinState.mSelectMode">
-              <set-size
-                :initial-height="DefaultSize.height"
-                :initial-width="DefaultSize.width"
-                :initial-dpi="DefaultDpi"
-              ></set-size>
-              <bg-bar></bg-bar>
-            </div>
 
             <!-- 多选时展示 -->
             <div v-show="mixinState.mSelectMode === 'multiple'">
@@ -190,7 +180,6 @@ import myMaterial from '@/components/myMaterial/index.vue';
 import tools from '@/components/tools.vue';
 import importSvgEl from '@/components/importSvgEl.vue';
 import bgBar from '@/components/bgBar.vue';
-import setSize from '@/components/setSize.vue';
 import replaceImg from '@/components/replaceImg.vue';
 import filters from '@/components/filters.vue';
 import imgStroke from '@/components/imgStroke.vue';
@@ -274,8 +263,6 @@ const state = reactive({
 const menuActive = ref('tools');
 const leftBarComponent = {
   tools,
-  importTmpl,
-  importSvgEl,
   layer,
 };
 const leftBar = ref([
@@ -284,18 +271,6 @@ const leftBar = ref([
     key: 'tools',
     name: t('elements'),
     icon: 'md-images',
-  },
-  {
-    //模板
-    key: 'importTmpl',
-    name: t('templates'),
-    icon: 'md-book',
-  },
-  {
-    // 图片元素
-    key: 'importSvgEl',
-    name: t('material.cartoon'),
-    icon: 'ios-leaf-outline',
   },
   {
     // 图层
