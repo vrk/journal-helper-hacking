@@ -103,6 +103,7 @@ import importTmpl from '@/components/importTmpl.vue';
 import fontStyle from '@/components/fontStyle.vue';
 import myMaterial from '@/components/myMaterial/index.vue';
 import tools from '@/components/tools.vue';
+import paper from '@/components/paper.vue';
 import importSvgEl from '@/components/importSvgEl.vue';
 import bgBar from '@/components/bgBar.vue';
 import replaceImg from '@/components/replaceImg.vue';
@@ -188,19 +189,26 @@ const state = reactive({
 const menuActive = ref('tools');
 const leftBarComponent = {
   tools,
+  paper,
   layer,
 };
 const leftBar = ref([
   {
     //基础元素
     key: 'tools',
-    name: t('elements'),
+    name: 'Add Images',
     icon: 'md-images',
   },
   {
     // 图层
+    key: 'paper',
+    name: 'Page Layout',
+    icon: 'md-document',
+  },
+  {
+    // 图层
     key: 'layer',
-    name: t('layers'),
+    name: 'View Layers',
     icon: 'md-reorder',
   },
 ]);

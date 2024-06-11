@@ -1,5 +1,15 @@
 declare namespace fabric {
   export type CanvasUnits = 'pixels' | 'inches';
+  export interface Rect {
+    // My own additions:
+    id: string;
+    dpi: number;
+  }
+
+  export interface IObjectOptions {
+    dpi?: number | undefined;
+  }
+
   export interface Canvas {
     contextTop: CanvasRenderingContext2D;
     lowerCanvasEl: HTMLElement;

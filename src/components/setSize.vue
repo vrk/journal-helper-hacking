@@ -8,15 +8,15 @@
 
 <template>
   <div v-if="!mixinState.mSelectMode" class="attr-item-box">
-    <Divider plain orientation="left">
-      <h4>{{ $t('bgSeting.size') }}</h4>
-    </Divider>
     <Form inline class="form-wrap">
       <FormItem :label="$t('Width')" prop="name">
         <InputNumber v-model="width" @on-change="setSize"></InputNumber>
       </FormItem>
       <FormItem :label="$t('Height')" prop="name">
         <InputNumber v-model="height" @on-change="setSize"></InputNumber>
+      </FormItem>
+      <FormItem label="DPI" prop="name">
+        <InputNumber v-model="dpiRef" @on-change="setSize"></InputNumber>
       </FormItem>
     </Form>
   </div>
@@ -31,25 +31,30 @@ const { mixinState, canvasEditor } = useSelect();
 
 let width = ref(props.initialWidth ?? 0);
 let height = ref(props.initialHeight ?? 0);
+let dpiRef = ref(props.initialDpi ?? 72);
 
 onMounted(() => {
   console.log('set size mounted');
-  canvasEditor.on('sizeChange', (w, h) => {
+  canvasEditor.on('sizeChange', (w, h, dpi) => {
     console.log('HIIII', canvasEditor.option);
+    canvasEditor.fabricCanvas.dpi = dpi;
     const divisor =
       canvasEditor.fabricCanvas.units === 'pixels' ? 1 : canvasEditor.fabricCanvas.dpi;
     width.value = w / divisor;
     height.value = h / divisor;
+    dpiRef.value = dpi;
   });
 });
 
 const setSize = () => {
   if (canvasEditor.fabricCanvas.units === 'pixels') {
-    canvasEditor.setSize(width.value, height.value);
+    canvasEditor.setSize(width.value, height.value, dpiRef.value);
   } else {
+    canvasEditor.fabricCanvas.dpi = dpiRef.value;
     canvasEditor.setSize(
       width.value * canvasEditor.fabricCanvas.dpi,
-      height.value * canvasEditor.fabricCanvas.dpi
+      height.value * canvasEditor.fabricCanvas.dpi,
+      canvasEditor.fabricCanvas.dpi
     );
   }
 };
@@ -66,5 +71,9 @@ const setSize = () => {
 .form-wrap {
   display: flex;
   flex-direction: column;
+}
+
+h4 {
+  font-weight: normal;
 }
 </style>

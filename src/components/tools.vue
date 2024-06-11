@@ -1,12 +1,12 @@
 <template>
   <div>
-    <Divider plain orientation="left">{{ $t('common_elements') }}</Divider>
+    <Divider plain orientation="left">Add</Divider>
     <div class="tool-box">
       <span
         @click="insertImage"
         :class="state.isDrawingLineMode && state.lineType === 'freeDraw' && 'bg'"
       >
-        <Icon type="md-brush" :size="22" />
+        <Icon type="md-image" :size="22" />
       </span>
     </div>
   </div>

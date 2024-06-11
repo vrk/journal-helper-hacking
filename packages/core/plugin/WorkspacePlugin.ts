@@ -14,6 +14,7 @@ type IEditor = Editor;
 type MyOptionType = {
   width: number;
   height: number;
+  dpi: number;
 };
 
 class WorkspacePlugin {
@@ -24,8 +25,6 @@ class WorkspacePlugin {
   static apis = ['big', 'small', 'auto', 'one', 'setSize', 'getWorkspase', 'setWorkspaseBg'];
 
   static cssPixelsPerInch = 90;
-
-  private zoomFactorForInches: number;
 
   workspaceEl!: HTMLElement;
   workspaceFabricRect: null | fabric.Rect;
@@ -52,12 +51,19 @@ class WorkspacePlugin {
     this.option = {
       width: config.widthInPixels,
       height: config.heightInPixels,
+      dpi: config.dpi,
     };
     this._initBackground();
     this._initWorkspace();
     this._initResizeObserve();
     this._bindWheel();
-    this.zoomFactorForInches = WorkspacePlugin.cssPixelsPerInch / config.dpi;
+  }
+
+  zoomFactorForInches() {
+    const workspaceFabricRect = this.fabricCanvas
+      .getObjects()
+      .find((item) => item.id === 'workspace') as fabric.Rect;
+    return WorkspacePlugin.cssPixelsPerInch / workspaceFabricRect.dpi;
   }
 
   hookImportAfter() {
@@ -66,8 +72,8 @@ class WorkspacePlugin {
       if (workspace) {
         workspace.set('selectable', false);
         workspace.set('hasControls', false);
-        this.setSize(workspace.width, workspace.height);
-        this.editor.emit('sizeChange', workspace.width, workspace.height);
+        this.setSize(workspace.width, workspace.height, workspace.dpi);
+        this.editor.emit('sizeChange', workspace.width, workspace.height, workspace.get('dpi'));
       }
       resolve('');
     });
@@ -89,7 +95,7 @@ class WorkspacePlugin {
 
   // Initialized canvas
   _initWorkspace() {
-    const { width, height } = this.option;
+    const { width, height, dpi } = this.option;
     const workspace = new fabric.Rect({
       fill: 'rgba(255,255,255,1)',
       width,
@@ -99,6 +105,7 @@ class WorkspacePlugin {
     });
     workspace.set('selectable', false);
     workspace.set('hasControls', false);
+    workspace['dpi'] = dpi;
     workspace.hoverCursor = 'default';
     this.fabricCanvas.add(workspace);
     this.fabricCanvas.renderAll();
@@ -140,9 +147,12 @@ class WorkspacePlugin {
     resizeObserver.observe(this.workspaceEl);
   }
 
-  setSize(width: number | undefined, height: number | undefined) {
-    if (width === undefined || height === undefined) {
-      throw new Error(`width or height is undefined. width: ${width}, height: ${height}`);
+  setSize(width: number | undefined, height: number | undefined, dpi: number | undefined) {
+    console.log('size is setting');
+    if (width === undefined || height === undefined || dpi === undefined) {
+      throw new Error(
+        `width or height is undefined. width: ${width}, height: ${height}, dpi: ${dpi}`
+      );
     }
     this._initBackground();
     this.option.width = width;
@@ -153,7 +163,13 @@ class WorkspacePlugin {
       .find((item) => item.id === 'workspace') as fabric.Rect;
     this.workspaceFabricRect.set('width', width);
     this.workspaceFabricRect.set('height', height);
-    this.editor.emit('sizeChange', this.workspaceFabricRect.width, this.workspaceFabricRect.height);
+    this.workspaceFabricRect.dpi = dpi;
+    this.editor.emit(
+      'sizeChange',
+      this.workspaceFabricRect.width,
+      this.workspaceFabricRect.height,
+      this.workspaceFabricRect.dpi
+    );
     this.one();
   }
 
@@ -211,7 +227,7 @@ class WorkspacePlugin {
 
   // 1:1 放大
   one() {
-    this.setZoomAuto(1 * this.zoomFactorForInches);
+    this.setZoomAuto(1 * this.zoomFactorForInches());
     this.fabricCanvas.requestRenderAll();
   }
 
