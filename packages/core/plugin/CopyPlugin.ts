@@ -11,6 +11,7 @@ import Editor from '../Editor';
 type IEditor = Editor;
 import { v4 as uuid } from 'uuid';
 import { getImgStr } from '../utils/utils';
+import { start } from 'repl';
 
 const COPY_COMMAND = 'ctrl+c, command+c';
 const PASTE_COMMAND = 'ctrl+v, command+v';
@@ -22,6 +23,10 @@ class CopyPlugin {
   static apis = ['clone'];
   public hotkeys: string[] = [COPY_COMMAND, PASTE_COMMAND];
   private cache: null | fabric.ActiveSelection | fabric.Object;
+  private nextPasteLocation = {
+    top: 10,
+    left: 10,
+  };
   constructor(canvas: fabric.Canvas, editor: IEditor) {
     this.canvas = canvas;
     this.editor = editor;
@@ -29,10 +34,13 @@ class CopyPlugin {
     this.initPaste();
   }
 
+  _getCopySpace() {
+    return this.canvas.dpi * 0.2;
+  }
+
   // Multiple Object Copy
   _copyActiveSelection(activeObject: fabric.Object) {
     // Spacing settings
-    const grid = 10;
     const canvas = this.canvas;
     activeObject?.clone((cloned: fabric.Object) => {
       // Cingle again, processing the situation of multiple objects
@@ -43,9 +51,10 @@ class CopyPlugin {
         clonedObj.canvas = canvas;
         // Set location information
         clonedObj.set({
-          left: clonedObj.left + grid,
-          top: clonedObj.top + grid,
+          left: clonedObj.left + this._getCopySpace(),
+          top: clonedObj.top + this._getCopySpace(),
           evented: true,
+          name: activeObject.name,
           id: uuid(),
         });
         clonedObj.forEachObject((obj: fabric.Object) => {
@@ -63,16 +72,16 @@ class CopyPlugin {
   // Single object copy
   _copyObject(activeObject: fabric.Object) {
     // Spacing settings
-    const grid = 10;
     const canvas = this.canvas;
     activeObject?.clone((cloned: fabric.Object) => {
       if (cloned.left === undefined || cloned.top === undefined) return;
       canvas.discardActiveObject();
       // Set location information
       cloned.set({
-        left: cloned.left + grid,
-        top: cloned.top + grid,
+        left: cloned.left + this._getCopySpace(),
+        top: cloned.top + this._getCopySpace(),
         evented: true,
+        name: activeObject.name,
         id: uuid(),
       });
       canvas.add(cloned);
@@ -81,15 +90,15 @@ class CopyPlugin {
     });
   }
 
-  // 复制元素
+  // for context menu copy
   clone(paramsActiveObeject?: fabric.ActiveSelection | fabric.Object) {
     const activeObject = paramsActiveObeject || this.canvas.getActiveObject();
     if (!activeObject) return;
-    // if (paramsActiveObeject) {
-    //   this._copyActiveSelection(activeObject);
-    // } else {
-    this._copyObject(activeObject);
-    // }
+    if (activeObject.type === 'activeSelection') {
+      this._copyActiveSelection(activeObject);
+    } else {
+      this._copyObject(activeObject);
+    }
   }
 
   // Shortcut key extension recovery
@@ -99,6 +108,10 @@ class CopyPlugin {
       if (!activeObject) {
         return;
       }
+      this.nextPasteLocation = {
+        left: activeObject.left || this._getCopySpace(),
+        top: activeObject.top || this._getCopySpace(),
+      };
       const objectAsJson = JSON.stringify(activeObject.toJSON());
       return navigator.clipboard.writeText(objectAsJson);
     } else if (eventName === PASTE_COMMAND && e.type === 'keydown') {
@@ -111,7 +124,7 @@ class CopyPlugin {
   contextMenu() {
     const activeObject = this.canvas.getActiveObject();
     if (activeObject) {
-      return [{ text: '复制', hotkey: 'Ctrl+V', disabled: false, onclick: () => this.clone() }];
+      return [{ text: 'Copy', hotkey: '', disabled: false, onclick: () => this.clone() }];
     }
   }
 
@@ -128,27 +141,32 @@ class CopyPlugin {
     try {
       const clipboardContents = await navigator.clipboard.read();
       for (const item of clipboardContents) {
+        console.log('start item', item);
         if (item.types.includes('text/plain')) {
           const blob = await item.getType('text/plain');
           const blobText = await blob.text();
           const parsed = JSON.parse(blobText);
           const canvas = this.canvas;
           if (parsed.version) {
+            const startingLeft = this.nextPasteLocation.left + this._getCopySpace();
+            const startingTop = this.nextPasteLocation.top + this._getCopySpace();
+
             // then we know this is another FabricJS object
             if (parsed.type === 'activeSelection') {
+              const group = parsed;
+              const groupLeft = startingLeft;
+              const groupTop = startingTop;
+              console.log('enliven start');
               fabric.util.enlivenObjects(
                 parsed.objects,
                 (objects: any) => {
                   objects.forEach(function (obj: any) {
                     const objectLeft = obj.left;
-                    const group = parsed;
                     const objectTop = obj.top;
-                    const groupLeft = group.left;
-                    const groupTop = group.top;
                     const objectInGroupLeft = objectLeft + groupLeft + group.width / 2;
                     const objectInGroupTop = objectTop + groupTop + group.height / 2;
-                    obj.left = objectInGroupLeft + 0.2 * canvas.dpi;
-                    obj.top = objectInGroupTop + 0.2 * canvas.dpi;
+                    obj.left = objectInGroupLeft;
+                    obj.top = objectInGroupTop;
                     obj.id = uuid();
                     canvas.add(obj);
                   });
@@ -165,8 +183,8 @@ class CopyPlugin {
                 [parsed],
                 (objects: any) => {
                   objects.forEach(function (obj: any) {
-                    obj.left = obj.left + 0.2 * canvas.dpi;
-                    obj.top = obj.top + 0.2 * canvas.dpi;
+                    obj.left = startingLeft;
+                    obj.top = startingTop;
                     obj.id = uuid();
                     canvas.add(obj);
                     canvas.setActiveObject(obj);
@@ -176,6 +194,10 @@ class CopyPlugin {
                 'fabric'
               );
             }
+            this.nextPasteLocation = {
+              left: startingLeft,
+              top: startingTop,
+            };
           } else if (item.types.includes('image/png')) {
             const blob = await item.getType('image/png');
           }
