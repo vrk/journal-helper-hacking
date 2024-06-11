@@ -31,6 +31,7 @@
         <div style="float: right">
           <!-- Preview -->
           <save></save>
+          <printCanvas></printCanvas>
         </div>
       </Header>
       <Content style="display: flex; height: calc(100vh - 64px)">
@@ -73,63 +74,21 @@
 </template>
 
 <script name="Home" setup>
-// 导入元素
 import importJson from '@/components/importJSON.vue';
-import importFile from '@/components/importFile.vue';
-// 路由
-import { useRoute } from 'vue-router';
 
-// import fontTmpl from '@/components/fontTmpl.vue';
-
-// 顶部组件
-import align from '@/components/align.vue';
-import myTemplName from '@/components/myTemplName.vue';
-import centerAlign from '@/components/centerAlign.vue';
-import flip from '@/components/flip.vue';
-import previewCurrent from '@/components/previewCurrent';
+import printCanvas from '@/components/printCanvas.vue';
 import save from '@/components/save.vue';
-import lang from '@/components/lang.vue';
-import clone from '@/components/clone.vue';
-import hide from '@/components/hide.vue';
-import group from '@/components/group.vue';
 import zoom from '@/components/zoom.vue';
 import dragMode from '@/components/dragMode.vue';
-import lock from '@/components/lock.vue';
-import dele from '@/components/del.vue';
-import waterMark from '@/components/waterMark.vue';
-import login from '@/components/login';
-// 左侧组件
-import importTmpl from '@/components/importTmpl.vue';
-import fontStyle from '@/components/fontStyle.vue';
-import myMaterial from '@/components/myMaterial/index.vue';
 import tools from '@/components/tools.vue';
 import paper from '@/components/paper.vue';
-import importSvgEl from '@/components/importSvgEl.vue';
-import bgBar from '@/components/bgBar.vue';
-import replaceImg from '@/components/replaceImg.vue';
-import filters from '@/components/filters.vue';
-import imgStroke from '@/components/imgStroke.vue';
-// import elementData from '@/components/elementData.vue';
-// 右侧组件
 import history from '@/components/history.vue';
 import layer from '@/components/layer.vue';
-// import attribute from '@/components/attribute.vue';
-import attributePostion from '@/components/attributePostion.vue';
-import attributeId from '@/components/attributeId.vue';
-import attributeShadow from '@/components/attributeShadow.vue';
-import attributeBorder from '@/components/attributeBorder.vue';
-import attributeRounded from '@/components/attributeRounded.vue';
-import attributeFont from '@/components/attributeFont.vue';
-import attributeColor from '@/components/attributeColor.vue';
 
-// 功能组件
 import { fabric } from 'fabric';
 
 // hooks
 import useSelectListen from '@/hooks/useSelectListen';
-import { useI18n } from 'vue-i18n';
-
-const { t } = useI18n();
 
 const APIHOST = import.meta.env.APP_APIHOST;
 
@@ -162,9 +121,6 @@ import Editor, {
   SimpleClipImagePlugin,
   SelectPlugin,
 } from '@kuaitu/core';
-import Edit from '@/components/edit.vue';
-import ClipImage from '@/components/clipImage.vue';
-import AttributeTextContent from '@/components/attributeTextContent.vue';
 
 // Create an editor
 const canvasEditor = new Editor();

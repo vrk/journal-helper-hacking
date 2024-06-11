@@ -12,6 +12,7 @@ import Editor from './Editor';
 type IEditor = Editor;
 import { SelectEvent, SelectMode } from './eventType';
 import { changeDpiDataUrl } from 'changedpi';
+import printJS from 'print-js';
 
 function transformText(objects: any) {
   if (!objects) return;
@@ -41,6 +42,7 @@ class ServersPlugin {
     'saveImg',
     'clear',
     'preview',
+    'print',
     'addImgByElement',
     'getImageExtension',
     'getSelectMode',
@@ -216,6 +218,25 @@ class ServersPlugin {
         const dataUrl = this.canvas.toDataURL(option);
         this.editor.hooksEntity.hookSaveAfter.callAsync(dataUrl, () => {
           resolve(dataUrl);
+        });
+      });
+    });
+  }
+
+  print() {
+    this.editor.hooksEntity.hookSaveBefore.callAsync('', () => {
+      const option = this._getSaveOption();
+
+      this.canvas.clone((clonedCanvas: fabric.Canvas) => {
+        clonedCanvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+        const dataUrl = clonedCanvas.toDataURL(option);
+        const dataUrlAdjustedDPI = changeDpiDataUrl(dataUrl, this.canvas.dpi);
+        this.editor.hooksEntity.hookSaveAfter.callAsync(dataUrlAdjustedDPI, () => {
+          printJS({
+            printable: dataUrlAdjustedDPI,
+            type: 'image',
+            maxWidth: clonedCanvas.width,
+          });
         });
       });
     });
