@@ -30,7 +30,6 @@ export class DringPlugin {
 
   startDring() {
     this.dragMode = true;
-    this.canvas.defaultCursor = 'grab';
     this.editor.emit('startDring');
     this.canvas.renderAll();
   }
@@ -64,6 +63,7 @@ export class DringPlugin {
       if (this.isDragging) {
         This.canvas.discardActiveObject();
         This.canvas.setCursor('grabbing');
+        console.log('grabbin');
         const { e } = opt;
         if (!this.viewportTransform) return;
         const vpt = this.viewportTransform;
@@ -76,6 +76,7 @@ export class DringPlugin {
     });
 
     this.canvas.on('mouse:up', function (this: ExtCanvas) {
+      This.canvas.setCursor('default');
       if (!this.viewportTransform) return;
       this.setViewportTransform(this.viewportTransform);
       this.isDragging = false;
@@ -92,7 +93,6 @@ export class DringPlugin {
 
   _setDring() {
     this.canvas.selection = false;
-    this.canvas.defaultCursor = 'grab';
     this.canvas.getObjects().forEach((obj) => {
       obj.selectable = false;
     });
