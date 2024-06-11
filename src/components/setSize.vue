@@ -8,12 +8,14 @@
 
 <template>
   <Form inline class="form-wrap">
+    <Divider plain orientation="left">Dimensions</Divider>
     <FormItem :label="$t('Width')" prop="name">
       <InputNumber v-model="width" @on-change="setSize"></InputNumber>
     </FormItem>
     <FormItem :label="$t('Height')" prop="name">
       <InputNumber v-model="height" @on-change="setSize"></InputNumber>
     </FormItem>
+    <Divider plain orientation="left">Pixel Density</Divider>
     <FormItem label="DPI" prop="name">
       <InputNumber v-model="dpiRef" @on-change="setSize"></InputNumber>
     </FormItem>
@@ -34,12 +36,12 @@ let dpiRef = ref(props.initialDpi ?? 72);
 onMounted(() => {
   console.log('set size mounted');
   const divisor = canvasEditor.fabricCanvas.units === 'pixels' ? 1 : canvasEditor.fabricCanvas.dpi;
-  width.value = canvasEditor.fabricCanvas.width / divisor;
-  height.value = canvasEditor.fabricCanvas.height / divisor;
+  const workspace = canvasEditor.fabricCanvas.getObjects().find((item) => item.id === 'workspace');
+  width.value = workspace.width / divisor;
+  height.value = workspace.height / divisor;
   dpiRef.value = divisor;
 
   canvasEditor.on('sizeChange', (w, h, dpi) => {
-    console.log('HIIII', canvasEditor.option);
     canvasEditor.fabricCanvas.dpi = dpi;
     const divisor =
       canvasEditor.fabricCanvas.units === 'pixels' ? 1 : canvasEditor.fabricCanvas.dpi;

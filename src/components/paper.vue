@@ -1,6 +1,5 @@
 <template>
   <div>
-    <Divider plain orientation="left">Dimensions</Divider>
     <set-size
       :initial-height="DefaultSize.height"
       :initial-width="DefaultSize.width"

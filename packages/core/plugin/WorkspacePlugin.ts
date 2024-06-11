@@ -106,7 +106,7 @@ class WorkspacePlugin {
     });
     workspace.set('selectable', false);
     workspace.set('hasControls', false);
-    workspace['dpi'] = dpi;
+    workspace.dpi = dpi;
     workspace.hoverCursor = 'default';
     this.fabricCanvas.add(workspace);
     this.fabricCanvas.renderAll();
@@ -171,7 +171,7 @@ class WorkspacePlugin {
       this.workspaceFabricRect.height,
       this.workspaceFabricRect.dpi
     );
-    this.one();
+    this.auto();
   }
 
   setZoomAuto(scale: number, cb?: (left?: number, top?: number) => void) {
