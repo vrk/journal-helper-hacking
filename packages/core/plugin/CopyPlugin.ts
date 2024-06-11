@@ -141,7 +141,6 @@ class CopyPlugin {
     try {
       const clipboardContents = await navigator.clipboard.read();
       for (const item of clipboardContents) {
-        console.log('start item', item);
         if (item.types.includes('text/plain')) {
           const blob = await item.getType('text/plain');
           const blobText = await blob.text();
@@ -156,7 +155,6 @@ class CopyPlugin {
               const group = parsed;
               const groupLeft = startingLeft;
               const groupTop = startingTop;
-              console.log('enliven start');
               fabric.util.enlivenObjects(
                 parsed.objects,
                 (objects: any) => {

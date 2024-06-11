@@ -67,7 +67,6 @@ function insertImgFile(file, name) {
       left: store.lastInsertCoords.left,
       top: store.lastInsertCoords.top,
     });
-    console.log('name', name);
 
     const workspace = canvasEditor.canvas.getObjects().find((item) => item.id === 'workspace');
     const centerPoint = workspace.getCenterPoint();
@@ -75,7 +74,6 @@ function insertImgFile(file, name) {
     canvasEditor.canvas.add(imgInstance);
     canvasEditor.canvas.setActiveObject(imgInstance);
     canvasEditor.canvas.renderAll();
-    console.log(canvasEditor.canvas);
     // Delete the picture elements in the page
     imgEl.remove();
   };

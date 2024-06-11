@@ -10,7 +10,7 @@
   "dependencies": {
     "@webtoon/psd": "^0.4.0",
     "events": "^3.3.0",
-    "fabric-history": "^1.6.0",
+    "fabric-history": "^1.7.0",
     "fontfaceobserver": "^2.1.0",
     "hotkeys-js": "^3.8.8",
     "qs": "^6.12.1",

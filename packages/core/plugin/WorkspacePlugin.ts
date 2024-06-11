@@ -38,7 +38,6 @@ class WorkspacePlugin {
       dpi: number;
     }
   ) {
-    console.log('workspace constructed');
     this.fabricCanvas = fabricCanvas;
     this.editor = editor;
     this.workspaceFabricRect = null;
@@ -69,7 +68,6 @@ class WorkspacePlugin {
   hookImportAfter() {
     return new Promise((resolve) => {
       const workspace = this.fabricCanvas.getObjects().find((item) => item.id === 'workspace');
-      console.log(workspace);
       if (workspace) {
         workspace.set('selectable', false);
         workspace.set('hasControls', false);
@@ -149,7 +147,6 @@ class WorkspacePlugin {
   }
 
   setSize(width: number | undefined, height: number | undefined, dpi: number | undefined) {
-    console.log('size is setting');
     if (width === undefined || height === undefined || dpi === undefined) {
       throw new Error(
         `width or height is undefined. width: ${width}, height: ${height}, dpi: ${dpi}`

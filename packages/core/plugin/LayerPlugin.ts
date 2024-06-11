@@ -45,7 +45,6 @@ class LayerPlugin {
       const activeObject = this.canvas.getActiveObjects()[0];
       activeObject && activeObject.bringToFront();
       this.canvas.renderAll();
-      console.log(this);
       this._workspaceSendToBack();
     }
   }
