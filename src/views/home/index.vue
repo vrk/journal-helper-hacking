@@ -8,22 +8,15 @@
 <template>
   <div class="home">
     <Layout>
-      <!-- 头部区域 -->
       <Header v-if="state.show">
-        <!-- logo -->
         <span class="logo">
           <a href="https://github.com/nihaojob/vue-fabric-editor" target="_blank">
             <Icon type="logo-github" :size="30" />
           </a>
         </span>
 
-        <!-- 导入 -->
         <import-Json></import-Json>
         <Divider type="vertical" />
-        <import-file></import-file>
-        <Divider type="vertical" />
-        <myTemplName></myTemplName>
-        <!-- 标尺开关 -->
         <Tooltip :content="$t('grid')">
           <iSwitch
             v-model="state.ruler"
@@ -41,16 +34,16 @@
         </div>
       </Header>
       <Content style="display: flex; height: calc(100vh - 64px)">
-        <!-- 左侧区域 -->
+        <!-- Left area -->
         <div v-if="state.show" :class="`left-bar ${state.toolsBarShow && 'show-tools-bar'}`">
-          <!-- 左侧菜单 -->
+          <!-- Left menu -->
           <Menu :active-name="menuActive" accordion @on-select="showToolsBar" width="65px">
             <MenuItem v-for="item in leftBar" :key="item.key" :name="item.key" class="menu-item">
               <Icon :type="item.icon" size="24" />
               <div>{{ item.name }}</div>
             </MenuItem>
           </Menu>
-          <!-- 左侧组件 -->
+          <!-- Left component -->
           <div class="content" v-show="state.toolsBarShow">
             <div class="left-panel">
               <KeepAlive>
@@ -58,14 +51,14 @@
               </KeepAlive>
             </div>
           </div>
-          <!-- 关闭按钮 -->
+          <!-- Close button -->
           <div
             :class="`close-btn left-btn ${state.toolsBarShow && 'left-btn-open'}`"
             @click="hideToolsBar"
           ></div>
         </div>
 
-        <!-- 画布区域 -->
+        <!-- Canvas area -->
         <div id="workspace">
           <div class="canvas-box">
             <div class="inside-shadow"></div>
@@ -74,74 +67,6 @@
             <zoom></zoom>
           </div>
         </div>
-
-        <!-- 属性区域 380-->
-        <div class="right-bar" v-show="state.attrBarShow">
-          <div v-if="state.show" style="padding-top: 10px">
-            <!-- 未选择元素时 展示背景设置 -->
-
-            <!-- 多选时展示 -->
-            <div v-show="mixinState.mSelectMode === 'multiple'">
-              <!-- 分组 -->
-              <group></group>
-              <!-- <Divider plain></Divider> -->
-              <!-- 组对齐方式 -->
-              <align></align>
-              <!-- 居中对齐 -->
-              <center-align></center-align>
-            </div>
-
-            <div v-show="mixinState.mSelectMode === 'one'" class="attr-item-box">
-              <!-- <h3>快捷操作</h3> -->
-              <!-- 分组 -->
-              <group></group>
-              <!-- <Divider plain></Divider> -->
-              <Divider plain orientation="left">
-                <h4>Fast operation</h4>
-              </Divider>
-              <div class="bg-item" v-show="mixinState.mSelectMode">
-                <lock></lock>
-                <dele></dele>
-                <clone></clone>
-                <hide></hide>
-                <edit></edit>
-              </div>
-              <!-- <Divider plain></Divider> -->
-              <!-- 居中对齐 -->
-              <center-align></center-align>
-              <!-- 替换图片 -->
-              <replaceImg></replaceImg>
-              <!--       图片裁切       -->
-              <clip-image></clip-image>
-              <!-- 翻转 -->
-              <flip></flip>
-              <!-- 图片滤镜 -->
-              <filters></filters>
-              <!-- 图片描边 -->
-              <imgStroke />
-              <!-- 颜色 -->
-              <attributeColor></attributeColor>
-              <!-- 字体属性 -->
-              <attributeFont></attributeFont>
-              <!--      文字内容        -->
-              <attribute-text-content></attribute-text-content>
-              <!-- 位置信息 -->
-              <attributePostion></attributePostion>
-              <!-- 圆角 -->
-              <attributeRounded></attributeRounded>
-              <!-- <attributeId></attributeId> -->
-            </div>
-
-            <!-- 新增字体样式使用 -->
-            <!-- <Button @click="canvasEditor.getFontJson()" size="small">获取字体数据</Button> -->
-          </div>
-          <!-- <attribute v-if="state.show"></attribute> -->
-        </div>
-        <!-- 右侧关闭按钮 -->
-        <div
-          :class="`close-btn right-btn ${state.attrBarShow && 'right-btn-open'}`"
-          @click="switchAttrBar"
-        ></div>
       </Content>
     </Layout>
   </div>

@@ -96,7 +96,7 @@ const insertTypeHand = (type) => {
   const cb = HANDLEMAP[type];
   cb && typeof cb === 'function' && cb();
 };
-// 插入图片文件
+// Insert picture file
 function insertImgFile(file) {
   if (!file) throw new Error('file is undefined');
   const imgEl = document.createElement('img');
