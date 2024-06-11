@@ -10,6 +10,9 @@
 </template>
 
 <script setup name="Paper">
+import useSelect from '@/hooks/select';
+
+const { canvasEditor } = useSelect();
 const DefaultSize = {
   width: 8.5,
   height: 11,

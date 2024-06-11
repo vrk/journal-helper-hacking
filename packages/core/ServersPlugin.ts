@@ -108,6 +108,11 @@ class ServersPlugin {
     this.editor.hooksEntity.hookImportBefore.callAsync(jsonFile, () => {
       this.canvas.loadFromJSON(jsonFile, () => {
         this.canvas.renderAll();
+        const workspace = this.canvas.getObjects().find((item) => item.id === 'workspace');
+        this.canvas.dpi = metaData.dpi;
+        if (workspace) {
+          workspace.dpi = metaData.dpi;
+        }
         // Hook after loading
         this.editor.hooksEntity.hookImportAfter.callAsync(jsonFile, () => {
           // Fixed the problem that the JSON with watermarks cannot be cleared #359

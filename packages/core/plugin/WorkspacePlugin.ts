@@ -69,11 +69,12 @@ class WorkspacePlugin {
   hookImportAfter() {
     return new Promise((resolve) => {
       const workspace = this.fabricCanvas.getObjects().find((item) => item.id === 'workspace');
+      console.log(workspace);
       if (workspace) {
         workspace.set('selectable', false);
         workspace.set('hasControls', false);
         this.setSize(workspace.width, workspace.height, workspace.dpi);
-        this.editor.emit('sizeChange', workspace.width, workspace.height, workspace.get('dpi'));
+        this.editor.emit('sizeChange', workspace.width, workspace.height, workspace.dpi);
       }
       resolve('');
     });

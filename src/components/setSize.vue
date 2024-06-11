@@ -33,6 +33,11 @@ let dpiRef = ref(props.initialDpi ?? 72);
 
 onMounted(() => {
   console.log('set size mounted');
+  const divisor = canvasEditor.fabricCanvas.units === 'pixels' ? 1 : canvasEditor.fabricCanvas.dpi;
+  width.value = canvasEditor.fabricCanvas.width / divisor;
+  height.value = canvasEditor.fabricCanvas.height / divisor;
+  dpiRef.value = divisor;
+
   canvasEditor.on('sizeChange', (w, h, dpi) => {
     console.log('HIIII', canvasEditor.option);
     canvasEditor.fabricCanvas.dpi = dpi;
