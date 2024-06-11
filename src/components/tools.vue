@@ -68,10 +68,14 @@ function insertImgFile(file, name) {
       top: store.lastInsertCoords.top,
     });
     console.log('name', name);
-    // Set the zoom
+
+    const workspace = canvasEditor.canvas.getObjects().find((item) => item.id === 'workspace');
+    const centerPoint = workspace.getCenterPoint();
+    imgInstance.setPositionByOrigin(centerPoint, 'center', 'center');
     canvasEditor.canvas.add(imgInstance);
     canvasEditor.canvas.setActiveObject(imgInstance);
     canvasEditor.canvas.renderAll();
+    console.log(canvasEditor.canvas);
     // Delete the picture elements in the page
     imgEl.remove();
   };
