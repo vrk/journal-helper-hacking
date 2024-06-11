@@ -12,12 +12,15 @@ type IEditor = Editor;
 import { v4 as uuid } from 'uuid';
 import { getImgStr } from '../utils/utils';
 
+const COPY_COMMAND = 'ctrl+c, command+c';
+const PASTE_COMMAND = 'ctrl+v, command+v';
+
 class CopyPlugin {
   public canvas: fabric.Canvas;
   public editor: IEditor;
   static pluginName = 'CopyPlugin';
   static apis = ['clone'];
-  public hotkeys: string[] = ['ctrl+v', 'ctrl+c'];
+  public hotkeys: string[] = [COPY_COMMAND, PASTE_COMMAND];
   private cache: null | fabric.ActiveSelection | fabric.Object;
   constructor(canvas: fabric.Canvas, editor: IEditor) {
     this.canvas = canvas;
@@ -26,19 +29,20 @@ class CopyPlugin {
     this.initPaste();
   }
 
-  // 多选对象复制
+  // Multiple Object Copy
   _copyActiveSelection(activeObject: fabric.Object) {
-    // 间距设置
+    // Spacing settings
     const grid = 10;
     const canvas = this.canvas;
+    console.log('_copyActiveSelection', activeObject);
     activeObject?.clone((cloned: fabric.Object) => {
-      // 再次进行克隆，处理选择多个对象的情况
+      // Cingle again, processing the situation of multiple objects
       cloned.clone((clonedObj: fabric.ActiveSelection) => {
         canvas.discardActiveObject();
         if (clonedObj.left === undefined || clonedObj.top === undefined) return;
-        // 将克隆的画布重新赋值
+        // Re -assign the cloned canvas
         clonedObj.canvas = canvas;
-        // 设置位置信息
+        // Set location information
         clonedObj.set({
           left: clonedObj.left + grid,
           top: clonedObj.top + grid,
@@ -49,7 +53,7 @@ class CopyPlugin {
           obj.id = uuid();
           canvas.add(obj);
         });
-        // 解决不可选择问题
+        // Solving the problem of non -choice
         clonedObj.setCoords();
         canvas.setActiveObject(clonedObj);
         canvas.requestRenderAll();
@@ -57,15 +61,16 @@ class CopyPlugin {
     });
   }
 
-  // 单个对象复制
+  // Single object copy
   _copyObject(activeObject: fabric.Object) {
-    // 间距设置
+    // Spacing settings
     const grid = 10;
     const canvas = this.canvas;
+    console.log('_copyObject', activeObject);
     activeObject?.clone((cloned: fabric.Object) => {
       if (cloned.left === undefined || cloned.top === undefined) return;
       canvas.discardActiveObject();
-      // 设置位置信息
+      // Set location information
       cloned.set({
         left: cloned.left + grid,
         top: cloned.top + grid,
@@ -80,22 +85,28 @@ class CopyPlugin {
 
   // 复制元素
   clone(paramsActiveObeject?: fabric.ActiveSelection | fabric.Object) {
+    console.log('cloning');
     const activeObject = paramsActiveObeject || this.canvas.getActiveObject();
     if (!activeObject) return;
-    if (activeObject?.type === 'activeSelection') {
-      this._copyActiveSelection(activeObject);
-    } else {
-      this._copyObject(activeObject);
-    }
+    // if (paramsActiveObeject) {
+    //   this._copyActiveSelection(activeObject);
+    // } else {
+    this._copyObject(activeObject);
+    // }
   }
 
-  // 快捷键扩展回调
-  hotkeyEvent(eventName: string, e: any) {
-    if (eventName === 'ctrl+c' && e.type === 'keydown') {
+  // Shortcut key extension recovery
+  async hotkeyEvent(eventName: string, e: any) {
+    console.log('hotkey event', eventName);
+    if (eventName === COPY_COMMAND && e.type === 'keydown') {
       const activeObject = this.canvas.getActiveObject();
-      this.cache = activeObject;
-    }
-    if (eventName === 'ctrl+v' && e.type === 'keydown') {
+      if (!activeObject) {
+        return;
+      }
+      const objectAsJson = JSON.stringify(activeObject.toJSON());
+      console.log(objectAsJson);
+      return navigator.clipboard.writeText(objectAsJson);
+    } else if (eventName === PASTE_COMMAND && e.type === 'keydown') {
       if (this.cache) {
         this.clone(this.cache);
       }
@@ -119,9 +130,44 @@ class CopyPlugin {
   }
 
   async pasteListener(event: any) {
-    const canvas = this.canvas;
+    try {
+      const clipboardContents = await navigator.clipboard.read();
+      for (const item of clipboardContents) {
+        if (item.types.includes('text/plain')) {
+          const blob = await item.getType('text/plain');
+          const blobText = await blob.text();
+          const parsed = JSON.parse(blobText);
+          const canvas = this.canvas;
+          if (parsed.version) {
+            // then we know this is another FabricJS object
+            fabric.util.enlivenObjects(
+              [parsed],
+              (objects: any) => {
+                objects.forEach(function (o: any) {
+                  o.left = o.left += 0.2 * canvas.dpi;
+                  o.top = o.top += 0.2 * canvas.dpi;
+                  o.id = uuid();
+                  canvas.add(o);
+                  canvas.setActiveObject(o);
+                  canvas.renderAll();
+                });
+              },
+              'fabric'
+            );
+          } else if (item.types.includes('image/png')) {
+            const blob = await item.getType('image/png');
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    return;
+
     if (document.activeElement === document.body) {
-      event.preventDefault(); // 阻止默认粘贴行为
+      event.preventDefault(); // Prevent default paste behavior
+    }
+    if (this.cache) {
     } else {
       return;
     }
@@ -161,7 +207,7 @@ class CopyPlugin {
             // 创建图片对象
             const imgInstance = new fabric.Image(imgEl, {
               id: uuid(),
-              name: '图片1',
+              name: 'image',
               left: 100,
               top: 100,
             });

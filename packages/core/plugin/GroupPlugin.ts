@@ -57,7 +57,7 @@ class GroupPlugin {
       return [
         {
           text: 'Split combination',
-          hotkey: 'Ctrl+V',
+          hotkey: '',
           disabled: false,
           onclick: () => this.unGroup(),
         },
@@ -65,9 +65,7 @@ class GroupPlugin {
     }
 
     if (this.canvas.getActiveObjects().length > 1) {
-      return [
-        { text: 'combination', hotkey: 'Ctrl+V', disabled: false, onclick: () => this.group() },
-      ];
+      return [{ text: 'combination', hotkey: '', disabled: false, onclick: () => this.group() }];
     }
   }
   destroy() {

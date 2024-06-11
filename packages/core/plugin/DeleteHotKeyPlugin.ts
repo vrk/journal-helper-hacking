@@ -24,6 +24,7 @@ class DeleteHotKeyPlugin {
 
   // 快捷键扩展回调
   hotkeyEvent(eventName: string, e: any) {
+    console.log('hotkey delete');
     if (e.type === 'keydown' && eventName === 'backspace') {
       this.del();
     }
@@ -42,10 +43,7 @@ class DeleteHotKeyPlugin {
   contextMenu() {
     const activeObject = this.canvas.getActiveObject();
     if (activeObject) {
-      return [
-        null,
-        { text: 'delete', hotkey: 'Ctrl+V', disabled: false, onclick: () => this.del() },
-      ];
+      return [null, { text: 'delete', hotkey: 'del', disabled: false, onclick: () => this.del() }];
     }
   }
 
