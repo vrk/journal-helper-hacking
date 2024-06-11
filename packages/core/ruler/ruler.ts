@@ -669,7 +669,7 @@ class CanvasRuler {
       // 鼠标从里面出去
       if (this.lastAttr.status !== 'out') {
         // 更改鼠标指针
-        this.options.canvas.defaultCursor = this.lastAttr.cursor;
+        // this.options.canvas.defaultCursor = this.lastAttr.cursor;
         this.lastAttr.status = 'out';
       }
       return;
@@ -678,11 +678,11 @@ class CanvasRuler {
     // if (activeObjects.length === 1 && activeObjects[0] instanceof fabric.GuideLine) {
     //   return;
     // }
-    // 鼠标从外边进入 或 在另一侧标尺
+    // Enter from the outside or on the other side ruler
     if (this.lastAttr.status === 'out' || hoveredRuler !== this.lastAttr.status) {
       // 更改鼠标指针
       this.lastAttr.cursor = this.options.canvas.defaultCursor;
-      this.options.canvas.defaultCursor = hoveredRuler === 'horizontal' ? 'ns-resize' : 'ew-resize';
+      // this.options.canvas.defaultCursor = hoveredRuler === 'horizontal' ? 'ns-resize' : 'ew-resize';
       this.lastAttr.status = hoveredRuler;
     }
   }
