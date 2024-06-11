@@ -43,7 +43,7 @@ class HistoryPlugin {
     });
     window.addEventListener('beforeunload', (e) => {
       if (this.canvas.historyUndo.length > 0) {
-        (e || window.event).returnValue = '确认离开';
+        (e || window.event).returnValue = 'Are you sure you want to leave?';
       }
     });
   }
@@ -61,7 +61,7 @@ class HistoryPlugin {
   }
 
   undo() {
-    // fix 历史记录退回到第一步时，画布区域可被拖拽
+    // fix When the historical record is returned to the first step, the canvas area can be dragged
     if (this.canvas.historyUndo.length === 1) {
       this.editor.clear();
       this.canvas.clearHistory();
@@ -76,7 +76,7 @@ class HistoryPlugin {
     this.historyUpdate();
   }
 
-  // 快捷键扩展回调
+  // Shortcut key extension recovery
   hotkeyEvent(eventName: string, e: any) {
     if (e.type === 'keydown') {
       switch (eventName) {
