@@ -75,6 +75,7 @@ class HistoryPlugin {
     this.canvas.redo();
     this.historyUpdate();
   }
+  destroy() {}
 
   // Shortcut key extension recovery
   hotkeyEvent(eventName: string, e: any) {

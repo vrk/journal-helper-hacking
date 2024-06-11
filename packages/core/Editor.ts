@@ -58,7 +58,6 @@ class Editor extends EventEmitter {
     if (this._checkPlugin(plugin) && this.canvas) {
       this._saveCustomAttr(plugin);
       const pluginRunTime = new plugin(this.canvas, this, options || {}) as IPluginClass;
-      // Add plug -in name
       pluginRunTime.pluginName = plugin.pluginName;
       this.pluginMap[plugin.pluginName] = pluginRunTime;
       this._bindingHooks(pluginRunTime);
@@ -71,7 +70,9 @@ class Editor extends EventEmitter {
     this.canvas = null;
     this.contextMenu = null;
     for (const [name, pluginRuntime] of Object.entries(this.pluginMap)) {
-      pluginRuntime.destroy();
+      if (pluginRuntime.destroy) {
+        pluginRuntime.destroy();
+      }
     }
     this.pluginMap = {};
     this.customEvents = [];
@@ -89,7 +90,7 @@ class Editor extends EventEmitter {
   private _checkPlugin(plugin: IPluginClass) {
     const { pluginName, events = [], apis = [] } = plugin;
     //Name inspection
-    if (this.pluginMap[pluginName]) {
+    if (!pluginName || this.pluginMap[pluginName]) {
       throw new Error(pluginName + 'Plug -in repeated initialization');
     }
     events.forEach((eventName: string) => {

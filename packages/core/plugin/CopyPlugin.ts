@@ -10,12 +10,12 @@ import { v4 as uuid } from 'uuid';
 const COPY_COMMAND = 'ctrl+c, command+c';
 const PASTE_COMMAND = 'ctrl+v, command+v';
 
-class CopyPlugin implements IPluginTempl {
+class CopyPlugin {
   public canvas: fabric.Canvas;
   public editor: IEditor;
-  pluginName = 'CopyPlugin';
-  apis = ['clone'];
-  events = [];
+  static pluginName = 'CopyPlugin';
+  static apis = ['clone'];
+  static events = [];
   public hotkeys: string[] = [COPY_COMMAND, PASTE_COMMAND];
   private nextPasteLocation = {
     top: 10,

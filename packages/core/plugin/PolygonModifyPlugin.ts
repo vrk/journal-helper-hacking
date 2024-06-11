@@ -114,6 +114,7 @@ class PolygonModifyPlugin {
   init() {
     console.info('[PolygonModifyPlugin]: init');
   }
+  destroy() {}
   _onDeselected: () => any = noop;
   _ensureEvent(poly: fabric.Object) {
     poly.off('deselected', this._onDeselected);

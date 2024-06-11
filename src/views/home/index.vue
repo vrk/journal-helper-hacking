@@ -160,6 +160,7 @@ import Editor, {
   PathTextPlugin,
   PsdPlugin,
   SimpleClipImagePlugin,
+  SelectPlugin,
 } from '@kuaitu/core';
 import Edit from '@/components/edit.vue';
 import ClipImage from '@/components/clipImage.vue';
@@ -235,6 +236,7 @@ onMounted(() => {
   canvasEditor.use(CenterAlignPlugin);
   canvasEditor.use(LayerPlugin);
   canvasEditor.use(CopyPlugin);
+  canvasEditor.use(SelectPlugin);
   canvasEditor.use(MoveHotKeyPlugin);
   canvasEditor.use(DeleteHotKeyPlugin);
   canvasEditor.use(GroupPlugin);
