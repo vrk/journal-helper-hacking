@@ -137,72 +137,117 @@ class CopyPlugin {
     window.addEventListener('paste', (e) => this.pasteListener(e));
   }
 
-  async pasteListener(event: any) {
+  async _pasteFabricObject(item: ClipboardItem) {
     try {
-      const clipboardContents = await navigator.clipboard.read();
-      for (const item of clipboardContents) {
-        if (item.types.includes('text/plain')) {
-          const blob = await item.getType('text/plain');
-          const blobText = await blob.text();
-          const parsed = JSON.parse(blobText);
-          const canvas = this.canvas;
-          if (parsed.version) {
-            const startingLeft = this.nextPasteLocation.left + this._getCopySpace();
-            const startingTop = this.nextPasteLocation.top + this._getCopySpace();
-
-            // then we know this is another FabricJS object
-            if (parsed.type === 'activeSelection') {
-              const group = parsed;
-              const groupLeft = startingLeft;
-              const groupTop = startingTop;
-              fabric.util.enlivenObjects(
-                parsed.objects,
-                (objects: any) => {
-                  objects.forEach(function (obj: any) {
-                    const objectLeft = obj.left;
-                    const objectTop = obj.top;
-                    const objectInGroupLeft = objectLeft + groupLeft + group.width / 2;
-                    const objectInGroupTop = objectTop + groupTop + group.height / 2;
-                    obj.left = objectInGroupLeft;
-                    obj.top = objectInGroupTop;
-                    obj.id = uuid();
-                    canvas.add(obj);
-                  });
-                  const sel = new fabric.ActiveSelection(objects, {
-                    canvas: canvas,
-                  });
-                  canvas.setActiveObject(sel);
-                  canvas.requestRenderAll();
-                },
-                'fabric'
-              );
-            } else {
-              fabric.util.enlivenObjects(
-                [parsed],
-                (objects: any) => {
-                  objects.forEach(function (obj: any) {
-                    obj.left = startingLeft;
-                    obj.top = startingTop;
-                    obj.id = uuid();
-                    canvas.add(obj);
-                    canvas.setActiveObject(obj);
-                  });
-                  canvas.requestRenderAll();
-                },
-                'fabric'
-              );
-            }
-            this.nextPasteLocation = {
-              left: startingLeft,
-              top: startingTop,
-            };
-          } else if (item.types.includes('image/png')) {
-            const blob = await item.getType('image/png');
-          }
+      const blob = await item.getType('text/plain');
+      const blobText = await blob.text();
+      const parsed = JSON.parse(blobText);
+      const canvas = this.canvas;
+      if (parsed.version) {
+        const startingLeft = this.nextPasteLocation.left + this._getCopySpace();
+        const startingTop = this.nextPasteLocation.top + this._getCopySpace();
+        // then we know this is another FabricJS object
+        if (parsed.type === 'activeSelection') {
+          const group = parsed;
+          const groupLeft = startingLeft;
+          const groupTop = startingTop;
+          fabric.util.enlivenObjects(
+            parsed.objects,
+            (objects: any) => {
+              objects.forEach(function (obj: any) {
+                const objectLeft = obj.left;
+                const objectTop = obj.top;
+                const objectInGroupLeft = objectLeft + groupLeft + group.width / 2;
+                const objectInGroupTop = objectTop + groupTop + group.height / 2;
+                obj.left = objectInGroupLeft;
+                obj.top = objectInGroupTop;
+                obj.id = uuid();
+                canvas.add(obj);
+              });
+              const sel = new fabric.ActiveSelection(objects, {
+                canvas: canvas,
+              });
+              canvas.setActiveObject(sel);
+              canvas.requestRenderAll();
+            },
+            'fabric'
+          );
+        } else {
+          fabric.util.enlivenObjects(
+            [parsed],
+            (objects: any) => {
+              objects.forEach(function (obj: any) {
+                obj.left = startingLeft;
+                obj.top = startingTop;
+                obj.id = uuid();
+                canvas.add(obj);
+                canvas.setActiveObject(obj);
+              });
+              canvas.requestRenderAll();
+            },
+            'fabric'
+          );
         }
+        this.nextPasteLocation = {
+          left: startingLeft,
+          top: startingTop,
+        };
       }
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async _pasteImageData(blob: Blob) {
+    return new Promise((resolve) => {
+      const url = URL.createObjectURL(blob);
+      let img = new Image();
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const imgInstance = new fabric.Image(img, {
+          id: uuid(),
+          name: 'pasted image',
+          left: this._getCopySpace(),
+          top: this._getCopySpace(),
+        });
+        this.canvas.add(imgInstance);
+        const workspace = this.canvas.getObjects().find((item) => item.id === 'workspace');
+        if (workspace) {
+          const centerPoint = workspace.getCenterPoint();
+          imgInstance.setPositionByOrigin(centerPoint, 'center', 'center');
+        }
+
+        this.canvas.setActiveObject(imgInstance);
+        this.canvas.renderAll();
+        img.remove();
+        resolve(img);
+      };
+      img.src = url;
+    });
+
+    const imageUrl = URL.createObjectURL(file);
+    const imgEl = document.createElement('img');
+    imgEl.src = imageUrl;
+    // 插入页面
+    document.body.appendChild(imgEl);
+    imgEl.onload = () => {
+      // 创建图片对象
+      // 删除页面中的图片元素
+      imgEl.remove();
+    };
+  }
+
+  async pasteListener(event: any) {
+    const clipboardContents = await navigator.clipboard.read();
+    for (const item of clipboardContents) {
+      const imageType = item.types.find((type) => type.startsWith('image/'));
+      console.log(item.types);
+      if (item.types.includes('text/plain')) {
+        return this._pasteFabricObject(item);
+      } else if (imageType) {
+        const blob = await item.getType(imageType);
+        return this._pasteImageData(blob);
+      }
     }
     return;
 
