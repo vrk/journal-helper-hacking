@@ -96,20 +96,22 @@ class ServersPlugin {
   }
 
   loadJSON(jsonFile: string | object, callback?: () => void) {
-    // 确保元素存在id
-    const temp = typeof jsonFile === 'string' ? JSON.parse(jsonFile) : jsonFile;
-    temp.objects.forEach((item: any) => {
+    // Make sure the element exists ID
+    const journalFile = typeof jsonFile === 'string' ? JSON.parse(jsonFile) : jsonFile;
+    const { fabricData, metaData } = journalFile;
+
+    fabricData.objects.forEach((item: any) => {
       !item.id && (item.id = uuid());
     });
-    jsonFile = JSON.stringify(temp);
-    // 加载前钩子
+    jsonFile = JSON.stringify(fabricData);
+    // Before loading
     this.editor.hooksEntity.hookImportBefore.callAsync(jsonFile, () => {
       this.canvas.loadFromJSON(jsonFile, () => {
         this.canvas.renderAll();
-        // 加载后钩子
+        // Hook after loading
         this.editor.hooksEntity.hookImportAfter.callAsync(jsonFile, () => {
-          // 修复导入带水印的json无法清除问题 #359
-          this.editor?.updateDrawStatus(!!temp['overlayImage']);
+          // Fixed the problem that the JSON with watermarks cannot be cleared #359
+          this.editor?.updateDrawStatus(!!fabricData['overlayImage']);
           this.canvas.renderAll();
           callback && callback();
           this.editor.emit('loadJson');
@@ -159,10 +161,16 @@ class ServersPlugin {
 
   async saveJson() {
     const dataUrl = this.getJson();
-    // 把文本text转为textgroup，让导入可以编辑
+    // Turn text text to textgroup, so that the import can be edited
     await transformText(dataUrl.objects);
+    const journalFile = {
+      fabricData: dataUrl,
+      metaData: {
+        dpi: this.canvas.dpi,
+      },
+    };
     const fileStr = `data:text/json;charset=utf-8,${encodeURIComponent(
-      JSON.stringify(dataUrl, null, '\t')
+      JSON.stringify(journalFile, null, '\t')
     )}`;
     downFile(fileStr, 'json');
   }

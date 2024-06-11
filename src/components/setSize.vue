@@ -7,19 +7,17 @@
 -->
 
 <template>
-  <div v-if="!mixinState.mSelectMode" class="attr-item-box">
-    <Form inline class="form-wrap">
-      <FormItem :label="$t('Width')" prop="name">
-        <InputNumber v-model="width" @on-change="setSize"></InputNumber>
-      </FormItem>
-      <FormItem :label="$t('Height')" prop="name">
-        <InputNumber v-model="height" @on-change="setSize"></InputNumber>
-      </FormItem>
-      <FormItem label="DPI" prop="name">
-        <InputNumber v-model="dpiRef" @on-change="setSize"></InputNumber>
-      </FormItem>
-    </Form>
-  </div>
+  <Form inline class="form-wrap">
+    <FormItem :label="$t('Width')" prop="name">
+      <InputNumber v-model="width" @on-change="setSize"></InputNumber>
+    </FormItem>
+    <FormItem :label="$t('Height')" prop="name">
+      <InputNumber v-model="height" @on-change="setSize"></InputNumber>
+    </FormItem>
+    <FormItem label="DPI" prop="name">
+      <InputNumber v-model="dpiRef" @on-change="setSize"></InputNumber>
+    </FormItem>
+  </Form>
 </template>
 
 <script setup name="CanvasSize">
