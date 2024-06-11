@@ -22,7 +22,6 @@ class CopyPlugin {
   static pluginName = 'CopyPlugin';
   static apis = ['clone'];
   public hotkeys: string[] = [COPY_COMMAND, PASTE_COMMAND];
-  private cache: null | fabric.ActiveSelection | fabric.Object;
   private nextPasteLocation = {
     top: 10,
     left: 10,
@@ -30,7 +29,6 @@ class CopyPlugin {
   constructor(canvas: fabric.Canvas, editor: IEditor) {
     this.canvas = canvas;
     this.editor = editor;
-    this.cache = null;
     this.initPaste();
   }
 
@@ -114,10 +112,6 @@ class CopyPlugin {
       };
       const objectAsJson = JSON.stringify(activeObject.toJSON());
       return navigator.clipboard.writeText(objectAsJson);
-    } else if (eventName === PASTE_COMMAND && e.type === 'keydown') {
-      if (this.cache) {
-        this.clone(this.cache);
-      }
     }
   }
 
@@ -224,24 +218,29 @@ class CopyPlugin {
       };
       img.src = url;
     });
-
-    const imageUrl = URL.createObjectURL(file);
-    const imgEl = document.createElement('img');
-    imgEl.src = imageUrl;
-    // 插入页面
-    document.body.appendChild(imgEl);
-    imgEl.onload = () => {
-      // 创建图片对象
-      // 删除页面中的图片元素
-      imgEl.remove();
-    };
   }
 
-  async pasteListener(event: any) {
+  async _pasteFiles(files: FileList) {
+    // Iterate over all pasted files.
+    Array.from(files).forEach(async (file) => {
+      if (file.type.startsWith('image/')) {
+        await this._pasteImageData(file);
+      }
+    });
+  }
+
+  async pasteListener(event: ClipboardEvent) {
+    event.preventDefault();
+    if (event.clipboardData?.files && event.clipboardData.files.length > 0) {
+      // handle file
+      this._pasteFiles(event.clipboardData.files);
+      return;
+    }
+
     const clipboardContents = await navigator.clipboard.read();
     for (const item of clipboardContents) {
       const imageType = item.types.find((type) => type.startsWith('image/'));
-      console.log(item.types);
+      console.log(item, item.types);
       if (item.types.includes('text/plain')) {
         return this._pasteFabricObject(item);
       } else if (imageType) {
