@@ -96,29 +96,17 @@ import Editor, {
   DringPlugin,
   AlignGuidLinePlugin,
   ControlsPlugin,
-  // ControlsRotatePlugin,
   CenterAlignPlugin,
   LayerPlugin,
   CopyPlugin,
   MoveHotKeyPlugin,
   DeleteHotKeyPlugin,
-  GroupPlugin,
-  DrawLinePlugin,
-  GroupTextEditorPlugin,
   GroupAlignPlugin,
   WorkspacePlugin,
   HistoryPlugin,
   FlipPlugin,
   RulerPlugin,
   MaterialPlugin,
-  WaterMarkPlugin,
-  FontPlugin,
-  PolygonModifyPlugin,
-  DrawPolygonPlugin,
-  FreeDrawPlugin,
-  PathTextPlugin,
-  PsdPlugin,
-  SimpleClipImagePlugin,
   SelectPlugin,
 } from '@kuaitu/core';
 
@@ -173,7 +161,7 @@ const leftBar = ref([
 onMounted(() => {
   // 初始化fabric
   const canvas = new fabric.Canvas('canvas', {
-    fireMiddleClick: true, // Right -click, the number of Button is 3
+    fireMiddleClick: true, //
     fireRightClick: true, // Right -click, the number of Button is 3
     stopContextMenu: true, // By default right -click menu
     controlsAboveOverlay: true, // After beyond the clippath, the control bar still shows
@@ -186,7 +174,6 @@ onMounted(() => {
   // 初始化编辑器
   canvasEditor.init(canvas);
   canvasEditor.use(DringPlugin);
-  canvasEditor.use(PolygonModifyPlugin);
   canvasEditor.use(AlignGuidLinePlugin);
   canvasEditor.use(ControlsPlugin);
   // canvasEditor.use(ControlsRotatePlugin);
@@ -196,9 +183,6 @@ onMounted(() => {
   canvasEditor.use(SelectPlugin);
   canvasEditor.use(MoveHotKeyPlugin);
   canvasEditor.use(DeleteHotKeyPlugin);
-  canvasEditor.use(GroupPlugin);
-  canvasEditor.use(DrawLinePlugin);
-  canvasEditor.use(GroupTextEditorPlugin);
   canvasEditor.use(GroupAlignPlugin);
   canvasEditor.use(WorkspacePlugin, {
     heightInPixels: DefaultSize.height * DefaultDpi,
@@ -208,21 +192,8 @@ onMounted(() => {
   canvasEditor.use(HistoryPlugin);
   canvasEditor.use(FlipPlugin);
   canvasEditor.use(RulerPlugin);
-  canvasEditor.use(DrawPolygonPlugin);
-  canvasEditor.use(FreeDrawPlugin);
-  canvasEditor.use(PathTextPlugin);
-  canvasEditor.use(SimpleClipImagePlugin);
-  canvasEditor.use(FontPlugin, {
-    repoSrc: APIHOST,
-  });
-  canvasEditor.use(MaterialPlugin, {
-    repoSrc: APIHOST,
-  });
-  canvasEditor.use(WaterMarkPlugin);
-  canvasEditor.use(PsdPlugin);
 
   state.show = true;
-  // 默认打开标尺
   if (state.ruler) {
     canvasEditor.rulerEnable();
     canvasEditor.clippingDisable();
@@ -240,18 +211,12 @@ const rulerSwitch = (val) => {
   }
 };
 
-// 隐藏工具条
 const hideToolsBar = () => {
   state.toolsBarShow = !state.toolsBarShow;
 };
-// 展示工具条
 const showToolsBar = (val) => {
   menuActive.value = val;
   state.toolsBarShow = true;
-};
-// 属性面板开关
-const switchAttrBar = () => {
-  state.attrBarShow = !state.attrBarShow;
 };
 
 const { mixinState } = useSelectListen(canvasEditor);

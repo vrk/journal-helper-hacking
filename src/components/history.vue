@@ -9,14 +9,14 @@
 <template>
   <div style="display: inline-block">
     <!-- 后退 -->
-    <Tooltip :content="$t('history.revocation') + `(${canUndo})`">
+    <Tooltip content="Undo">
       <Button @click="undo" type="text" size="small" :disabled="!canUndo">
         <Icon type="ios-undo" size="20" />
       </Button>
     </Tooltip>
 
     <!-- 重做 -->
-    <Tooltip :content="$t('history.redo') + `(${canRedo})`">
+    <Tooltip content="Redo">
       <Button @click="redo" type="text" size="small" :disabled="!canRedo">
         <Icon type="ios-redo" size="20" />
       </Button>
